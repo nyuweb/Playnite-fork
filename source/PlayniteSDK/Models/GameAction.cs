@@ -270,7 +270,7 @@ namespace Playnite.SDK.Models
             }
         }
 
-        private int trackingFrequency = 2000;
+        private int trackingFrequency = 1500;
         /// <summary>
         /// Gets or sets delay in milliseconds before tracking actually starts.
         /// </summary>

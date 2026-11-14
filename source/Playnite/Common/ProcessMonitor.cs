@@ -20,6 +20,8 @@ namespace Playnite.Common
             this.process = process;
         }
 
+        public IEnumerable<int> TrackedProcessIds => new[] { process.Id };
+
         public bool IsProcessRunning()
         {
             return !process.HasExited;
@@ -34,6 +36,8 @@ namespace Playnite.Common
         {
             relatedIds.Add(originalId);
         }
+
+        public IEnumerable<int> TrackedProcessIds => relatedIds.ToList();
 
         public bool IsProcessTreeRunning()
         {
@@ -149,6 +153,9 @@ namespace Playnite.Common
             return FileSystem.DirectoryExists(dir);
         }
 
+        private int lastProcessId;
+        public IEnumerable<int> TrackedProcessIds => lastProcessId > 0 ? new[] { lastProcessId } : new int[0];
+
         public int IsProcessRunning()
         {
             foreach (var process in Process.GetProcesses().Where(a => a.SessionId != 0))
@@ -156,10 +163,12 @@ namespace Playnite.Common
                 if (process.TryGetMainModuleFileName(out var procPath) &&
                     procPath.StartsWith(dir, StringComparison.OrdinalIgnoreCase))
                 {
+                    lastProcessId = process.Id;
                     return process.Id;
                 }
             }
 
+            lastProcessId = 0;
             return 0;
         }
     }
@@ -179,6 +188,9 @@ public class MonitorProcessName
         ProcessName = processName;
     }
 
+    private int lastProcessId;
+    public IEnumerable<int> TrackedProcessIds => lastProcessId > 0 ? new[] { lastProcessId } : new int[0];
+
     public int IsProcessRunning()
     {
         foreach (var process in Process.GetProcesses().Where(a => a.SessionId != 0))
@@ -187,11 +199,13 @@ public class MonitorProcessName
             {
                 if (process.ProcessName == ProcessName)
                 {
+                    lastProcessId = process.Id;
                     return process.Id;
                 }
             }
         }
 
+        lastProcessId = 0;
         return 0;
     }
 }

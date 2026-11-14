@@ -1459,7 +1459,7 @@ namespace Playnite
                 // This delay apparently fixes issues with Playnite not restoring properly after game exits.
                 // The window will restore, but application will not regain active state.
                 // This was mainly reported to happen with some emulators, like RPCS3, no idea why.
-                Thread.Sleep(1000);
+                Thread.Sleep(750);
                 Application.Restore();
             }
 

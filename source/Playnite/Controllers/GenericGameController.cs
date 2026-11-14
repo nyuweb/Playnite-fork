@@ -270,6 +270,7 @@ namespace Playnite.Controllers
                     var monitor = new MonitorProcessTree(process.Id);
                     StartTracking(
                         () => monitor.IsProcessTreeRunning(),
+                        watchedProcessIds: () => monitor.TrackedProcessIds,
                         gameStoppedAction: () => ExecuteEmulatorScript(currentEmuProfile?.ExitScript, startedEmulatorDir, startedRomFile, startedEmulator, startedEmulatorProfile));
                 }
                 else if (trackingMode == TrackingMode.OriginalProcess)
@@ -278,6 +279,7 @@ namespace Playnite.Controllers
                     var monitor = new MonitorProcess(process);
                     StartTracking(
                         () => monitor.IsProcessRunning(),
+                        watchedProcessIds: () => monitor.TrackedProcessIds,
                         gameStoppedAction: () => ExecuteEmulatorScript(currentEmuProfile?.ExitScript, startedEmulatorDir, startedRomFile, startedEmulator, startedEmulatorProfile));
                 }
                 else if (trackingMode == TrackingMode.Directory)
@@ -288,6 +290,7 @@ namespace Playnite.Controllers
                     {
                         StartTracking(
                             () => monitor.IsProcessRunning() > 0,
+                            watchedProcessIds: () => monitor.TrackedProcessIds,
                             startupCheck: () => monitor.IsProcessRunning(),
                             gameStartedAction: (id) => gameStarted(id),
                             gameStoppedAction: () => ExecuteEmulatorScript(currentEmuProfile?.ExitScript, startedEmulatorDir, startedRomFile, startedEmulator, startedEmulatorProfile));
@@ -304,6 +307,7 @@ namespace Playnite.Controllers
                         var monitor = new MonitorProcessName(trackingPath);
                         StartTracking(
                             () => monitor.IsProcessRunning() > 0,
+                            watchedProcessIds: () => monitor.TrackedProcessIds,
                             startupCheck: () => monitor.IsProcessRunning(),
                             gameStartedAction: (id) => gameStarted(id),
                             gameStoppedAction: () => ExecuteEmulatorScript(currentEmuProfile?.ExitScript, startedEmulatorDir, startedRomFile, startedEmulator, startedEmulatorProfile));
@@ -552,6 +556,7 @@ namespace Playnite.Controllers
                             {
                                 StartTracking(
                                     () => monitor.IsProcessRunning() > 0,
+                                    watchedProcessIds: () => monitor.TrackedProcessIds,
                                     startupCheck: () => monitor.IsProcessRunning(),
                                     trackingFrequency: action.TrackingFrequency,
                                     trackingStartDelay: action.InitialTrackingDelay);
@@ -569,6 +574,7 @@ namespace Playnite.Controllers
                                 var monitor = new MonitorProcessTree(proc.Id);
                                 StartTracking(
                                     () => monitor.IsProcessTreeRunning(),
+                                    watchedProcessIds: () => monitor.TrackedProcessIds,
                                     trackingFrequency: action.TrackingFrequency,
                                     trackingStartDelay: action.InitialTrackingDelay);
                             }
@@ -585,6 +591,7 @@ namespace Playnite.Controllers
                         {
                             StartTracking(
                                () => monitor.IsProcessRunning() > 0,
+                               watchedProcessIds: () => monitor.TrackedProcessIds,
                                startupCheck: () => monitor.IsProcessRunning(),
                                trackingFrequency: action.TrackingFrequency,
                                trackingStartDelay: action.InitialTrackingDelay);
@@ -603,6 +610,7 @@ namespace Playnite.Controllers
                         var monitor = new MonitorProcessTree(proc.Id);
                         StartTracking(
                             () => monitor.IsProcessTreeRunning(),
+                            watchedProcessIds: () => monitor.TrackedProcessIds,
                             trackingFrequency: action.TrackingFrequency,
                             trackingStartDelay: action.InitialTrackingDelay);
                     }
@@ -619,6 +627,7 @@ namespace Playnite.Controllers
                         var monitor = new MonitorProcess(proc);
                         StartTracking(
                             () => monitor.IsProcessRunning(),
+                            watchedProcessIds: () => monitor.TrackedProcessIds,
                             trackingFrequency: action.TrackingFrequency,
                             trackingStartDelay: action.InitialTrackingDelay);
                     }
@@ -635,6 +644,7 @@ namespace Playnite.Controllers
                     {
                         StartTracking(
                             () => monitor.IsProcessRunning() > 0,
+                            watchedProcessIds: () => monitor.TrackedProcessIds,
                             startupCheck: () => monitor.IsProcessRunning(),
                             trackingFrequency: action.TrackingFrequency,
                             trackingStartDelay: action.InitialTrackingDelay);
@@ -651,6 +661,7 @@ namespace Playnite.Controllers
                         var monitor = new MonitorProcessName(action.TrackingPath);
                         StartTracking(
                             () => monitor.IsProcessRunning() > 0,
+                            watchedProcessIds: () => monitor.TrackedProcessIds,
                             startupCheck: () => monitor.IsProcessRunning(),
                             trackingFrequency: action.TrackingFrequency,
                             trackingStartDelay: action.InitialTrackingDelay);
@@ -667,17 +678,27 @@ namespace Playnite.Controllers
             }
         }
 
+        private const int DefaultTrackingFrequency = 1500;
+        private const int LegacyDefaultTrackingFrequency = 2000;
+
         public void StartTracking(
             Func<bool> trackingAction,
             Func<int> startupCheck = null,
             Action<int> gameStartedAction = null,
             Action gameStoppedAction = null,
-            int trackingFrequency = 2000,
-            int trackingStartDelay = 0)
+            int trackingFrequency = DefaultTrackingFrequency,
+            int trackingStartDelay = 0,
+            Func<IEnumerable<int>> watchedProcessIds = null)
         {
             if (watcherToken != null)
             {
                 throw new Exception("Game is already being tracked.");
+            }
+
+            // Actions saved before the default was lowered still carry the old value, treat it as the default.
+            if (trackingFrequency == LegacyDefaultTrackingFrequency)
+            {
+                trackingFrequency = DefaultTrackingFrequency;
             }
 
             watcherToken = new CancellationTokenSource();
@@ -759,7 +780,19 @@ namespace Playnite.Controllers
                         logger.Error(e, "Game tracking iteration failed.");
                     }
 
-                    await Task.Delay(trackingFrequency, watcherToken.Token).ContinueWith(task => { });
+                    // Wait for the next check, but wake up right away when a tracked process exits.
+                    // The check itself stays the source of truth, this only avoids waiting for the full interval.
+                    IEnumerable<int> processIds = null;
+                    try
+                    {
+                        processIds = watchedProcessIds?.Invoke()?.ToList();
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Warn(e, "Failed to get tracked process ids, using regular interval.");
+                    }
+
+                    await ProcessExitWaiter.WaitAsync(processIds, trackingFrequency, watcherToken.Token);
                     trackingWatch.Stop();
                     if (trackingWatch.ElapsedMilliseconds > (trackingFrequency + 30_000))
                     {
