@@ -458,9 +458,10 @@ namespace Playnite.FullscreenApp.Controls
                 if (computedRows == 0)
                     return new Size(centerMargin * 2, viewport.Height);
 
+                // Same margin on both sides (marginOffset / 2 of an item each), items start at itemWidth * 0.25 in GetItemRect.
                 var totalColumns = (int)Math.Ceiling(itemCount / (double)computedRows);
                 return new Size(
-                    (totalColumns * itemWidth) + (centerMargin * 2),
+                    (totalColumns + marginOffset) * itemWidth,
                     viewport.Height);
             }
             else
