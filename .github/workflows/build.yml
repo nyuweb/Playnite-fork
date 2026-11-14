@@ -7,6 +7,10 @@ on:
         type: choice
         options: [Release, Debug]
         default: Release
+      git_ref:
+        description: "Optional commit or branch to build instead of the workflow's own ref (empty = current)"
+        type: string
+        default: ""
       test_filter:
         description: "Optional dotnet test filter for Playnite.Tests (e.g. FullyQualifiedName~SettingsTests). Empty = no tests"
         type: string
@@ -16,6 +20,8 @@ jobs:
     runs-on: windows-2025
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_ref }}
       - uses: microsoft/setup-msbuild@v2
       - name: Install powershell-yaml
         shell: pwsh
@@ -44,6 +50,6 @@ jobs:
           dotnet test $dlls[0].FullName --filter "${{ inputs.test_filter }}"
       - uses: actions/upload-artifact@v4
         with:
-          name: playnite-${{ inputs.configuration }}
+          name: playnite-${{ inputs.configuration }}${{ inputs.git_ref != '' && format('-{0}', inputs.git_ref) || '' }}
           path: build/Playnite.zip
           if-no-files-found: error
