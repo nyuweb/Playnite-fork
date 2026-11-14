@@ -2138,17 +2138,6 @@ namespace Playnite
             }
         }
 
-        private UpdateCheckFrequency checkForProgramUpdates = UpdateCheckFrequency.OnEveryStartup;
-        public UpdateCheckFrequency CheckForProgramUpdates
-        {
-            get => checkForProgramUpdates;
-            set
-            {
-                checkForProgramUpdates = value;
-                OnPropertyChanged();
-            }
-        }
-
         private UpdateCheckFrequency checkForAddonUpdates = UpdateCheckFrequency.OnEveryStartup;
         public UpdateCheckFrequency CheckForAddonUpdates
         {
@@ -2182,7 +2171,6 @@ namespace Playnite
             }
         }
 
-        public DateTime LastProgramUpdateCheck { get; set; }
         public DateTime LastAddonUpdateCheck { get; set; }
         public DateTime LastLibraryUpdateCheck { get; set; }
         public DateTime LastEmuLibraryUpdateCheck { get; set; }
@@ -2236,9 +2224,6 @@ namespace Playnite
 
         private bool autoBackupIncludeThemes = false;
         public bool AutoBackupIncludeThemes { get => autoBackupIncludeThemes; set => SetValue(ref autoBackupIncludeThemes, value); }
-
-        private bool updateNotificationOnPatchesOnly = false;
-        public bool UpdateNotificationOnPatchesOnly { get => updateNotificationOnPatchesOnly; set => SetValue(ref updateNotificationOnPatchesOnly, value); }
 
         private string webImageSarchIconTerm = "\"{Name}\" icon";
         public string WebImageSarchIconTerm { get => webImageSarchIconTerm; set => SetValue(ref webImageSarchIconTerm, value); }
@@ -2683,22 +2668,6 @@ namespace Playnite
             OnPropertyChanged(nameof(GridItemHeight));
         }
 
-        public bool ShouldCheckProgramUpdatePeriodic()
-        {
-            switch (CheckForProgramUpdates)
-            {
-                case UpdateCheckFrequency.Manually:
-                    return false;
-                case UpdateCheckFrequency.OnceADay:
-                    return DateTimes.Now.Date > LastProgramUpdateCheck.Date;
-                case UpdateCheckFrequency.OnceAWeek:
-                    return (DateTimes.Now - LastProgramUpdateCheck).TotalDays > 6;
-                case UpdateCheckFrequency.OnEveryStartup:
-                default:
-                    return false;
-            }
-        }
-
         public bool ShouldCheckAddonUpdatePeriodic()
         {
             switch (CheckForAddonUpdates)
@@ -2712,22 +2681,6 @@ namespace Playnite
                 case UpdateCheckFrequency.OnEveryStartup:
                 default:
                     return false;
-            }
-        }
-
-        public bool ShouldCheckProgramUpdateStartup()
-        {
-            switch (CheckForProgramUpdates)
-            {
-                case UpdateCheckFrequency.Manually:
-                    return false;
-                case UpdateCheckFrequency.OnceADay:
-                    return DateTimes.Now.Date > LastProgramUpdateCheck.Date;
-                case UpdateCheckFrequency.OnceAWeek:
-                    return (DateTimes.Now - LastProgramUpdateCheck).TotalDays > 6;
-                case UpdateCheckFrequency.OnEveryStartup:
-                default:
-                    return true;
             }
         }
 

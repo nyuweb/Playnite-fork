@@ -42,28 +42,6 @@ namespace Playnite.Tests
             var testDates = new TestDateTimes();
             using (DateTimes.UseCustomDates(testDates))
             {
-                // --- Program update
-                // No date set check
-                testDates.Now = new DateTime(2020, 10, 1, 12, 0, 0);
-                settings.CheckForProgramUpdates = UpdateCheckFrequency.OnceADay;
-                Assert.IsTrue(settings.ShouldCheckProgramUpdatePeriodic());
-
-                // Once a day check
-                settings.LastProgramUpdateCheck = new DateTime(2020, 10, 1, 10, 00, 0);
-                Assert.IsFalse(settings.ShouldCheckProgramUpdatePeriodic());
-                testDates.Now = new DateTime(2020, 10, 2, 10, 0, 0);
-                Assert.IsTrue(settings.ShouldCheckProgramUpdatePeriodic());
-
-                // Once a week check
-                settings.CheckForProgramUpdates = UpdateCheckFrequency.OnceAWeek;
-                Assert.IsFalse(settings.ShouldCheckProgramUpdatePeriodic());
-                testDates.Now = new DateTime(2020, 10, 8, 10, 0, 0);
-                Assert.IsTrue(settings.ShouldCheckProgramUpdatePeriodic());
-
-                // Startup only check
-                settings.CheckForProgramUpdates = UpdateCheckFrequency.OnEveryStartup;
-                Assert.IsFalse(settings.ShouldCheckProgramUpdatePeriodic());
-
                 // --- Addon update
                 // No date set check
                 testDates.Now = new DateTime(2020, 10, 1, 12, 0, 0);
@@ -95,28 +73,6 @@ namespace Playnite.Tests
             var testDates = new TestDateTimes();
             using (DateTimes.UseCustomDates(testDates))
             {
-                // --- Program update
-                // No date set check
-                testDates.Now = new DateTime(2020, 10, 1, 12, 0, 0);
-                settings.CheckForProgramUpdates = UpdateCheckFrequency.OnceADay;
-                Assert.IsTrue(settings.ShouldCheckProgramUpdateStartup());
-
-                // Once a day check
-                settings.LastProgramUpdateCheck = new DateTime(2020, 10, 1, 10, 00, 0);
-                Assert.IsFalse(settings.ShouldCheckProgramUpdateStartup());
-                testDates.Now = new DateTime(2020, 10, 2, 10, 0, 0);
-                Assert.IsTrue(settings.ShouldCheckProgramUpdateStartup());
-
-                // Once a week check
-                settings.CheckForProgramUpdates = UpdateCheckFrequency.OnceAWeek;
-                Assert.IsFalse(settings.ShouldCheckProgramUpdateStartup());
-                testDates.Now = new DateTime(2020, 10, 8, 10, 0, 0);
-                Assert.IsTrue(settings.ShouldCheckProgramUpdateStartup());
-
-                // Startup only check
-                settings.CheckForProgramUpdates = UpdateCheckFrequency.OnEveryStartup;
-                Assert.IsTrue(settings.ShouldCheckProgramUpdateStartup());
-
                 // --- Addon update
                 // No date set check
                 testDates.Now = new DateTime(2020, 10, 1, 12, 0, 0);

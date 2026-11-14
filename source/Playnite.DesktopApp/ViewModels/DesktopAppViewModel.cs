@@ -927,12 +927,9 @@ namespace Playnite.DesktopApp.ViewModels
 
         public void CheckForUpdate()
         {
-            var updater = new Updater(App);
-            var appUpdateAvailable = false;
             var addonUpdates = new List<AddonUpdate>();
             var dialogRes = Dialogs.ActivateGlobalProgress((args) =>
                 {
-                    appUpdateAvailable = updater.IsUpdateAvailable;
                     args.Text = LOC.AddonLookingForUpdates.GetLocalized();
                     addonUpdates = Addons.CheckAddonUpdates(App.ServicesClient);
                 },
@@ -944,24 +941,14 @@ namespace Playnite.DesktopApp.ViewModels
                 return;
             }
 
-            if (!appUpdateAvailable && !addonUpdates.HasItems())
+            if (!addonUpdates.HasItems())
             {
                 Dialogs.ShowMessage(LOC.UpdateNoNewUpdateMessage.GetLocalized(), string.Empty);
                 return;
             }
 
-            if (appUpdateAvailable)
-            {
-                var model = new UpdateViewModel(updater, new UpdateWindowFactory(), Resources, Dialogs, App.Mode);
-                if (model.OpenView() == true)
-                    return;
-            }
-
-            if (addonUpdates.HasItems())
-            {
-                var model = new AddonsViewModel(new AddonsWindowFactory(), Dialogs, Resources, App.ServicesClient, Extensions, AppSettings, App, addonUpdates);
-                model.OpenView();
-            }
+            var model = new AddonsViewModel(new AddonsWindowFactory(), Dialogs, Resources, App.ServicesClient, Extensions, AppSettings, App, addonUpdates);
+            model.OpenView();
         }
 
         public void SwitchToFullscreenMode()

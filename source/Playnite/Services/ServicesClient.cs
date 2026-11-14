@@ -27,7 +27,7 @@ namespace Playnite.Services
         {
         }
 
-        public ServicesClient(string endpoint) : base(endpoint, Updater.CurrentVersion)
+        public ServicesClient(string endpoint) : base(endpoint, PlayniteEnvironment.CurrentVersion)
         {
         }
 

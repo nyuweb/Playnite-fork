@@ -70,7 +70,6 @@ namespace Playnite.FullscreenApp
             CrashHandlerWindowFactory.SetWindowType<CrashWindow>();
             ExtensionCrashHandlerWindowFactory.SetWindowType<ExtensionCrashWindow>();
             LicenseAgreementWindowFactory.SetWindowType<LicenseAgreementWindow>();
-            UpdateWindowFactory.SetWindowType<UpdateWindow>();
             SingleItemSelectionWindowFactory.SetWindowType<SingleItemSelectionWindow>();
             MultiItemSelectionWindowFactory.SetWindowType<MultiItemSelectionWindow>();
             HtmlTextView.CreateMoreButton = () => new ButtonEx();

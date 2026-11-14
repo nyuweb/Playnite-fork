@@ -40,12 +40,6 @@
                    VerticalAlignment="Center" HorizontalAlignment="Center"/>
     </DataTemplate>
     
-    <DataTemplate x:Key="TopPanelUpdateButtonTemplate">
-        <TextBlock Foreground="{DynamicResource WarningBrush}"
-                   VerticalAlignment="Center" HorizontalAlignment="Center"
-                   Text="&#xef08;" FontSize="24" FontFamily="{DynamicResource FontIcoFont}"/>
-    </DataTemplate>
-
     <DataTemplate x:Key="TopPanelExplorerSwitchTemplate">
         <TextBlock Text="&#xeeed;" FontFamily="{DynamicResource FontIcoFont}" FontSize="20"
                    VerticalAlignment="Center" HorizontalAlignment="Center"/>

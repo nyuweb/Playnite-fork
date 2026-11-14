@@ -19,6 +19,20 @@ namespace Playnite
 
     public static class PlayniteEnvironment
     {
+        private static Version currentVersion;
+        public static Version CurrentVersion
+        {
+            get
+            {
+                if (currentVersion == null)
+                {
+                    currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                }
+
+                return currentVersion;
+            }
+        }
+
         public static ReleaseChannel ReleaseChannel
         {
             get

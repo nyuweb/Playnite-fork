@@ -101,17 +101,6 @@ namespace Playnite.ViewModels
             }
         }
 
-        private bool updatesAvailable = false;
-        public bool UpdatesAvailable
-        {
-            get => updatesAvailable;
-            set
-            {
-                updatesAvailable = value;
-                OnPropertyChanged();
-            }
-        }
-
         private BaseCollectionView gamesView;
         public BaseCollectionView GamesView
         {
@@ -158,7 +147,6 @@ namespace Playnite.ViewModels
         public RelayCommand<FilterPreset> RemoveFilterPresetCommand { get; private set; }
         public RelayCommand<FilterPreset> ApplyFilterPresetCommand { get; private set; }
         public RelayCommand CancelProgressCommand { get; private set; }
-        public RelayCommand<object> OpenUpdatesCommand { get; private set; }
         public RelayCommand StartInteractivePowerShellCommand { get; private set; }
         public RelayCommand RestartApp { get; private set; }
         public RelayCommand RestartInSafeMode { get; private set; }
@@ -207,11 +195,6 @@ namespace Playnite.ViewModels
             AddFilterPresetCommand = new RelayCommand<object>((a) =>
             {
                 AddFilterPreset();
-            });
-
-            OpenUpdatesCommand = new RelayCommand<object>((_) =>
-            {
-                OpenUpdates();
             });
 
             CancelProgressCommand = new RelayCommand(() =>
@@ -481,16 +464,6 @@ namespace Playnite.ViewModels
                     ActiveFilterPreset = preset;
                 }
             }
-        }
-
-        private void OpenUpdates()
-        {
-            new UpdateViewModel(
-                new Updater(App),
-                new UpdateWindowFactory(),
-                new ResourceProvider(),
-                Dialogs,
-                App.Mode).OpenView();
         }
 
         public abstract NotificationMessage GetAddonUpdatesFoundMessage(List<AddonUpdate> updates);

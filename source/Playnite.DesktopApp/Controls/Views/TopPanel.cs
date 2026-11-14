@@ -201,13 +201,6 @@ namespace Playnite.DesktopApp.Controls.Views
                 PanelMainItems.Children.Add(listButton);
                 PanelMainItems.Children.Add(RightViewSeparator);
 
-                var updatesButton = AssignPanelButton("TopPanelUpdateButtonTemplate", mainModel.OpenUpdatesCommand, ResourceProvider.GetString(LOC.UpdateIsAvailableNotificationBody), out _);
-                BindingTools.SetBinding(updatesButton,
-                    Button.VisibilityProperty,
-                    mainModel,
-                    nameof(mainModel.UpdatesAvailable),
-                    converter: new BooleanToVisibilityConverter());
-                PanelMainItems.Children.Add(updatesButton);
                 PanelMainItems.Children.Add(AssignPanelButton("TopPanelSelectRandomGameButtonTemplate", mainModel.SelectRandomGameCommand, ResourceProvider.GetString(LOC.TopPanelSelectRandomGameButton), out ButtonSelectRandomGame));
                 PanelMainItems.Children.Add(AssignPanelButton("TopPanelViewSelectRandomGameButtonTemplate", mainModel.ViewSelectRandomGameCommand, ResourceProvider.GetString(LOC.TopPanelViewSelectRandomGameButtonTooltip), out ButtonViewSelectRandomGame));
 

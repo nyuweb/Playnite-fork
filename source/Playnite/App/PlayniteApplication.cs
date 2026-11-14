@@ -57,7 +57,7 @@ namespace Playnite
             }
         }
 
-        public static Version CurrentVersion => Updater.CurrentVersion;
+        public static Version CurrentVersion => PlayniteEnvironment.CurrentVersion;
         public event EventHandler ExtensionsLoaded;
         public ApplicationMode Mode { get; }
         public IDialogsFactory Dialogs { get; set; }
@@ -1375,77 +1375,31 @@ namespace Playnite
             }
         }
 
-        private void CheckForUpdates(bool checkProgram, bool checkAddons)
+        private void CheckForAddonUpdates()
         {
-            if (checkProgram)
+            try
             {
-                try
+                var updates = Addons.CheckAddonUpdates(ServicesClient);
+                if (updates.HasItems())
                 {
-                    var showNotification = false;
-                    var updater = new Updater(this);
-                    if (updater.IsUpdateAvailable)
-                    {
-                        if (AppSettings.UpdateNotificationOnPatchesOnly)
-                        {
-                            showNotification = Updater.CurrentVersion.Major == updater.GetLatestVersion().Major;
-                        }
-                        else
-                        {
-                            showNotification = true;
-                        }
-                    }
-
-                    if (showNotification)
-                    {
-                        var updateTitle = ResourceProvider.GetString("LOCUpdaterWindowTitle");
-                        var updateBody = ResourceProvider.GetString("LOCUpdateIsAvailableNotificationBody");
-                        if (!Current.IsActive)
-                        {
-                            ShowWindowsNotification(updateTitle, updateBody, () =>
-                            {
-                                Restore();
-                                new UpdateViewModel(
-                                    updater,
-                                    new UpdateWindowFactory(),
-                                    new ResourceProvider(),
-                                    Dialogs,
-                                    Mode).OpenView();
-                            });
-                        }
-
-                        MainModelBase.UpdatesAvailable = true;
-                    }
+                    Notifications.Add(MainModelBase.GetAddonUpdatesFoundMessage(updates));
                 }
-                catch (Exception exc)
-                {
-                    logger.Warn(exc, "Failed to process program update.");
-                }
-
-                AppSettings.LastProgramUpdateCheck = DateTimes.Now;
+            }
+            catch (Exception exc)
+            {
+                logger.Warn(exc, "Failed to process addon update check.");
             }
 
-            if (checkAddons)
-            {
-                try
-                {
-                    var updates = Addons.CheckAddonUpdates(ServicesClient);
-                    if (updates.HasItems())
-                    {
-                        Notifications.Add(MainModelBase.GetAddonUpdatesFoundMessage(updates));
-                    }
-                }
-                catch (Exception exc)
-                {
-                    logger.Warn(exc, "Failed to process addon update check.");
-                }
-
-                AppSettings.LastAddonUpdateCheck = DateTimes.Now;
-            }
+            AppSettings.LastAddonUpdateCheck = DateTimes.Now;
         }
 
         private void UpdateCheckerCallback(object state)
         {
-            CheckForUpdates(AppSettings.ShouldCheckProgramUpdatePeriodic(), AppSettings.ShouldCheckAddonUpdatePeriodic());
+            if (AppSettings.ShouldCheckAddonUpdatePeriodic())
+            {
+                CheckForAddonUpdates();
+            }
+
             CheckAddonBlacklist();
         }
 
@@ -1464,7 +1418,11 @@ namespace Playnite
 
             await Task.Run(() =>
             {
-                CheckForUpdates(AppSettings.ShouldCheckProgramUpdateStartup(), AppSettings.ShouldCheckAddonUpdateStartup());
+                if (AppSettings.ShouldCheckAddonUpdateStartup())
+                {
+                    CheckForAddonUpdates();
+                }
+
                 CheckAddonBlacklist();
             });
 

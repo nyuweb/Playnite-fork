@@ -72,7 +72,6 @@ namespace Playnite.DesktopApp
             ProgressWindowFactory.SetWindowType<ProgressWindow>();
             CrashHandlerWindowFactory.SetWindowType<CrashHandlerWindow>();
             ExtensionCrashHandlerWindowFactory.SetWindowType<ExtensionCrashHandlerWindow>();
-            UpdateWindowFactory.SetWindowType<UpdateWindow>();
             LicenseAgreementWindowFactory.SetWindowType<LicenseAgreementWindow>();
             SingleItemSelectionWindowFactory.SetWindowType<SingleItemSelectionWindow>();
             MultiItemSelectionWindowFactory.SetWindowType<MultiItemSelectionWindow>();
