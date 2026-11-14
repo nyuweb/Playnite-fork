@@ -7,6 +7,10 @@ on:
         type: choice
         options: [Release, Debug]
         default: Release
+      test_filter:
+        description: "Optional dotnet test filter for Playnite.Tests (e.g. FullyQualifiedName~SettingsTests). Empty = no tests"
+        type: string
+        default: ""
 jobs:
   build:
     runs-on: windows-2025
@@ -28,6 +32,10 @@ jobs:
           }
           if ($env:LICENSED_DEPS_URL) { $params.LicensedDependenciesUrl = $env:LICENSED_DEPS_URL }
           ./build/build.ps1 @params
+      - name: Run unit tests
+        if: ${{ inputs.test_filter != '' }}
+        shell: pwsh
+        run: dotnet test source/Tests/Playnite.Tests/Playnite.Tests.csproj -c ${{ inputs.configuration }} -p:Platform=x86 --filter "${{ inputs.test_filter }}"
       - uses: actions/upload-artifact@v4
         with:
           name: playnite-${{ inputs.configuration }}
