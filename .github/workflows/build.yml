@@ -36,6 +36,8 @@ jobs:
         if: ${{ inputs.test_filter != '' }}
         shell: pwsh
         run: |
+          msbuild source/Playnite.slnx /restore /m /p:Configuration=${{ inputs.configuration }} /p:Platform=x86 /p:NuGetAudit=false
+          if ($LASTEXITCODE -ne 0) { throw "Test build failed" }
           $dlls = @(Get-ChildItem source/Tests/Playnite.Tests/bin -Recurse -Filter Playnite.Tests.dll)
           $dlls | ForEach-Object { Write-Host "Found: $($_.FullName)" }
           if ($dlls.Count -eq 0) { throw "Playnite.Tests.dll not found" }
