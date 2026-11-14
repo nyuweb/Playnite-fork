@@ -21,10 +21,13 @@ jobs:
         env:
           LICENSED_DEPS_URL: ${{ secrets.LICENSED_DEPENDENCIES_URL }}
         run: |
-          $msbuild = (Get-Command msbuild).Source
-          $args = @("-Configuration", "${{ inputs.configuration }}", "-Package", "-MSBuildPath", $msbuild)
-          if ($env:LICENSED_DEPS_URL) { $args += @("-LicensedDependenciesUrl", $env:LICENSED_DEPS_URL) }
-          ./build/build.ps1 @args
+          $params = @{
+            Configuration = "${{ inputs.configuration }}"
+            Package = $true
+            MSBuildPath = (Get-Command msbuild).Source
+          }
+          if ($env:LICENSED_DEPS_URL) { $params.LicensedDependenciesUrl = $env:LICENSED_DEPS_URL }
+          ./build/build.ps1 @params
       - uses: actions/upload-artifact@v4
         with:
           name: playnite-${{ inputs.configuration }}
