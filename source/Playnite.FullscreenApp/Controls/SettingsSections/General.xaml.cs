@@ -44,22 +44,6 @@ namespace Playnite.FullscreenApp.Controls.SettingsSections
                 UpdateSourceTrigger.PropertyChanged);
 
             BindingTools.SetBinding(
-                ToggleBattery,
-                ToggleButton.IsCheckedProperty,
-                mainModel.AppSettings.Fullscreen,
-                nameof(FullscreenSettings.ShowBattery),
-                BindingMode.TwoWay,
-                UpdateSourceTrigger.PropertyChanged);
-
-            BindingTools.SetBinding(
-                ToggleBatteryPercentage,
-                ToggleButton.IsCheckedProperty,
-                mainModel.AppSettings.Fullscreen,
-                nameof(FullscreenSettings.ShowBatteryPercentage),
-                BindingMode.TwoWay,
-                UpdateSourceTrigger.PropertyChanged);
-
-            BindingTools.SetBinding(
                 ToggleClock,
                 ToggleButton.IsCheckedProperty,
                 mainModel.AppSettings.Fullscreen,

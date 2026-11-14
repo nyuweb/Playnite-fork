@@ -75,8 +75,6 @@ namespace Playnite.FullscreenApp.ViewModels
             designGame.Icon = "pack://application:,,,/Playnite;component/Resources/Images/DesignIcon.png";
 
             AppSettings = new PlayniteSettings();
-            AppSettings.Fullscreen.ShowBattery = true;
-            AppSettings.Fullscreen.ShowBatteryPercentage = true;
             AppSettings.Fullscreen.ShowClock = true;
 
             Extensions = new ExtensionFactory(Database, new GameControllerFactory(), null);

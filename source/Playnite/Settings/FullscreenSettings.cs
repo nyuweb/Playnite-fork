@@ -171,21 +171,6 @@ namespace Playnite
             }
         }
 
-        private bool showBattery = false;
-        public bool ShowBattery
-        {
-            get
-            {
-                return showBattery;
-            }
-
-            set
-            {
-                showBattery = value;
-                OnPropertyChanged();
-            }
-        }
-
         private bool showClock = true;
         public bool ShowClock
         {
@@ -197,21 +182,6 @@ namespace Playnite
             set
             {
                 showClock = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool showBatteryPercentage = false;
-        public bool ShowBatteryPercentage
-        {
-            get
-            {
-                return showBatteryPercentage;
-            }
-
-            set
-            {
-                showBatteryPercentage = value;
                 OnPropertyChanged();
             }
         }

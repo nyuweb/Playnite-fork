@@ -44,7 +44,6 @@ namespace Playnite.FullscreenApp.ViewModels
         public GamesEditor GamesEditor { get; }
         public bool IsFullScreen { get; private set; } = true;
         public ObservableTime CurrentTime { get; } = new ObservableTime();
-        public ObservablePowerStatus PowerStatus { get; } = new ObservablePowerStatus();
 
         private GameStatusViewModel gameStatusView;
         public GameStatusViewModel GameStatusView

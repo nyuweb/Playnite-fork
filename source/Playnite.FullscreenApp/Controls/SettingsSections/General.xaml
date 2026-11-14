@@ -24,10 +24,6 @@
         <pctrls:CheckBoxEx x:Name="TogglePrimaryDisplayOnly"
                            pbeh:FocusBahaviors.OnVisibilityFocus="True"
                            Content="{DynamicResource LOCSettingsAlwaysUsePrimaryDisplay}"  />
-        <pctrls:CheckBoxEx x:Name="ToggleBattery"
-                           Content="{DynamicResource LOCSettingsShowBatteryStatus}"  />
-        <pctrls:CheckBoxEx x:Name="ToggleBatteryPercentage"
-                           Content="{DynamicResource LOCSettingsShowBatteryPercentage}"  />
         <pctrls:CheckBoxEx x:Name="ToggleClock"
                            Content="{DynamicResource LOCSettingsShowClock}"  />
         <pctrls:CheckBoxEx x:Name="ToggleMinimizeAfterGame"

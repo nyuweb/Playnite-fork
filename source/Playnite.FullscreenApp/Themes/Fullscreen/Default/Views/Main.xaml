@@ -38,38 +38,6 @@
 
                                 <FilterPresetSelector x:Name="PART_FilterPresetSelector" Grid.Column="1" Margin="0,0,50,0" />
 
-                                <ContentControl x:Name="PART_ElemBatteryStatus" Focusable="False" FontSize="42"
-                                            VerticalAlignment="Center" Margin="10,0,10,0"
-                                            Grid.Column="2">
-                                    <ContentControl.Style>
-                                        <Style TargetType="ContentControl">
-                                            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding PowerStatus.Charge}" Value="Critical">
-                                                    <Setter Property="Content" Value="{DynamicResource BatteryStatusCritical}" />
-                                                    <Setter Property="Foreground" Value="Red" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding PowerStatus.Charge}" Value="Low">
-                                                    <Setter Property="Content" Value="{DynamicResource BatteryStatusLow}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding PowerStatus.Charge}" Value="Medium">
-                                                    <Setter Property="Content" Value="{DynamicResource BatteryStatusMedium}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding PowerStatus.Charge}" Value="High">
-                                                    <Setter Property="Content" Value="{DynamicResource BatteryStatusHigh}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding PowerStatus.IsCharging}" Value="True">
-                                                    <Setter Property="Content" Value="{DynamicResource BatteryStatusCharging}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ContentControl.Style>
-                                </ContentControl>
-
-                                <TextBlock x:Name="PART_TextBatteryPercentage" Style="{DynamicResource TextBlockBaseStyle}"
-                                       VerticalAlignment="Center" Margin="0,0,20,0"
-                                       Grid.Column="3"/>
-
                                 <TextBlock x:Name="PART_TextClock" Style="{DynamicResource TextBlockBaseStyle}"
                                        VerticalAlignment="Center" Margin="20,0,20,0"
                                        Grid.Column="4"/>

@@ -28,8 +28,6 @@ namespace Playnite.FullscreenApp.Controls.Views
     [TemplatePart(Name = "PART_ButtonMainMenu", Type = typeof(ButtonBase))]
     [TemplatePart(Name = "PART_ButtonNotifications", Type = typeof(ButtonBase))]
     [TemplatePart(Name = "PART_TextClock", Type = typeof(TextBlock))]
-    [TemplatePart(Name = "PART_TextBatteryPercentage", Type = typeof(TextBlock))]
-    [TemplatePart(Name = "PART_ElemBatteryStatus", Type = typeof(FrameworkElement))]
     [TemplatePart(Name = "PART_TextProgressTooltip", Type = typeof(TextBlock))]
     [TemplatePart(Name = "PART_ElemProgressIndicator", Type = typeof(FrameworkElement))]
     [TemplatePart(Name = "PART_ElemExtraFilterActive", Type = typeof(FrameworkElement))]
@@ -54,8 +52,6 @@ namespace Playnite.FullscreenApp.Controls.Views
         private ButtonBase ButtonMainMenu;
         private ButtonBase ButtonNotifications;
         private TextBlock TextClock;
-        private TextBlock TextBatteryPercentage;
-        private FrameworkElement ElemBatteryStatus;
         private TextBlock TextProgressTooltip;
         private FrameworkElement ElemProgressIndicator;
         private FrameworkElement ElemExtraFilterActive;
@@ -270,32 +266,6 @@ namespace Playnite.FullscreenApp.Controls.Views
                         TextBlock.VisibilityProperty,
                         mainModel.AppSettings.Fullscreen,
                         nameof(FullscreenSettings.ShowClock),
-                        converter: new Converters.BooleanToVisibilityConverter());
-                }
-
-                TextBatteryPercentage = Template.FindName("PART_TextBatteryPercentage", this) as TextBlock;
-                if (TextBatteryPercentage != null)
-                {
-                    BindingTools.SetBinding(TextBatteryPercentage,
-                        TextBlock.TextProperty,
-                        mainModel.PowerStatus,
-                        nameof(ObservablePowerStatus.PercentCharge),
-                        stringFormat: "{0}%");
-                    BindingTools.SetBinding(TextBatteryPercentage,
-                        TextBlock.VisibilityProperty,
-                        mainModel.AppSettings.Fullscreen,
-                        nameof(FullscreenSettings.ShowBatteryPercentage),
-                        converter: new Converters.BooleanToVisibilityConverter());
-                }
-
-                ElemBatteryStatus = Template.FindName("PART_ElemBatteryStatus", this) as FrameworkElement;
-                if (ElemBatteryStatus != null)
-                {
-                    BindingTools.SetBinding(
-                        ElemBatteryStatus,
-                        TextBlock.VisibilityProperty,
-                        mainModel.AppSettings.Fullscreen,
-                        nameof(FullscreenSettings.ShowBattery),
                         converter: new Converters.BooleanToVisibilityConverter());
                 }
 

@@ -5,12 +5,6 @@
     <BitmapImage x:Key="DefaultGameIcon" UriSource="{ThemeFile 'Images/applogo_clean.png'}" popt:Freeze="True" />
     <BitmapImage x:Key="DefaultGameCover" UriSource="{ThemeFile 'Images/custom_cover_background.png'}" popt:Freeze="True" />
 
-    <TextBlock x:Key="BatteryStatusCritical" Text="&#xeeb1;" FontFamily="{StaticResource FontIcoFont}" />
-    <TextBlock x:Key="BatteryStatusLow" Text="&#xeeb4;" FontFamily="{StaticResource FontIcoFont}" />
-    <TextBlock x:Key="BatteryStatusMedium" Text="&#xeeb3;" FontFamily="{StaticResource FontIcoFont}" />
-    <TextBlock x:Key="BatteryStatusHigh" Text="&#xeeb2;" FontFamily="{StaticResource FontIcoFont}" />
-    <TextBlock x:Key="BatteryStatusCharging" Text="&#xeed4;" FontFamily="{StaticResource FontIcoFont}" />
-
     <Style x:Key="ProgressIndicator" TargetType="ContentControl">
         <Setter Property="Template">
             <Setter.Value>
