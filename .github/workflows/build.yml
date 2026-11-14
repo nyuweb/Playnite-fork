@@ -1,0 +1,18 @@
+name: build
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - run: dotnet restore source/Playnite.slnx
+      - run: msbuild source/Playnite.slnx /p:Configuration=Debug /p:Platform=x86 /m
+      - uses: actions/upload-artifact@v4
+        with:
+          name: playnite-debug
+          path: |
+            source/Playnite.DesktopApp/bin/
+            source/Playnite.FullscreenApp/bin/
