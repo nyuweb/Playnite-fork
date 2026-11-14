@@ -31,7 +31,7 @@ namespace Playnite.FullscreenApp.Controls
         private int computedColumns;
         private const double marginOffset = 0.5;
         // Margin on each side of the list with horizontal scrolling, relative to the viewport width.
-        private const double horizontalSideMarginRatio = 0.05;
+        private const double horizontalSideMarginRatio = 0.025;
 
         public event EventHandler<InternalChildrenGeneratedArgs> InternalChildrenGenerated;
 
