@@ -13,7 +13,7 @@
     </UserControl.Resources>
 
     <GridEx Margin="15"
-            AutoLayoutColumns="2" ColumnCount="2" RowCount="3" StarRows="3">
+            AutoLayoutColumns="2" ColumnCount="2" RowCount="2" StarRows="2">
         <GridEx.Resources>
             <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
                 <Setter Property="VerticalAlignment" Value="Center" />
@@ -33,9 +33,5 @@
         <TextBlock Text="{DynamicResource LOCCheckEmulatedLibraryUpdates}" />
         <ComboBox pbeh:SelectorBehaviors.EnumSource="{x:Type p:LibraryUpdateCheckFrequency}"
                   SelectedValue="{Binding Settings.CheckForEmulatedLibraryUpdates}" />
-
-        <TextBlock Text="{DynamicResource LOCCheckAddonUpdates}" />
-        <ComboBox pbeh:SelectorBehaviors.EnumSource="{x:Type p:UpdateCheckFrequency}"
-                  SelectedValue="{Binding Settings.CheckForAddonUpdates}" />
     </GridEx>
 </UserControl>

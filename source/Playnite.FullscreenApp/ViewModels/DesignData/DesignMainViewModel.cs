@@ -19,7 +19,7 @@ namespace Playnite.FullscreenApp.ViewModels
     public class DesignMainViewModel : FullscreenAppViewModel
     {
         public new GamesCollectionViewEntry SelectedGame { get; set; }
-        public new bool GameDetailsButtonVisible { get; set; } = true;
+        public new bool GameOptionsButtonVisible { get; set; } = true;
 
         private static DesignMainViewModel designIntance;
         public static DesignMainViewModel DesignIntance
@@ -42,14 +42,6 @@ namespace Playnite.FullscreenApp.ViewModels
             }
         }
 
-        public static GameDetailsViewModel DesignSelectedGameDetailsIntance
-        {
-            get
-            {
-                return DesignIntance?.SelectedGameDetails;
-            }
-        }
-
         public static GamesCollectionViewEntry DesignSelectedGameIntance
         {
             get
@@ -69,7 +61,6 @@ namespace Playnite.FullscreenApp.ViewModels
         public DesignMainViewModel() : base(new InMemoryGameDatabase(), null, null, new ResourceProvider(), null)
         {
             GameListVisible = true;
-            GameDetailsVisible  = false;
             FilterPanelVisible = true;
             ProgressStatus = "Status example in progress...";
             ProgressValue = 50;
@@ -91,7 +82,6 @@ namespace Playnite.FullscreenApp.ViewModels
             Extensions = new ExtensionFactory(Database, new GameControllerFactory(), null);
             GamesView = new FullscreenCollectionView(Database, AppSettings, Extensions);
             SelectedGame = GamesView.Items[0];
-            SelectedGameDetails = new GameDetailsViewModel(GamesView.Items[0]);
         }
     }
 }

@@ -123,17 +123,6 @@ namespace Playnite.FullscreenApp.ViewModels
             }
         }
 
-        private GameDetailsViewModel selectedGameDetails;
-        public GameDetailsViewModel SelectedGameDetails
-        {
-            get => selectedGameDetails;
-            set
-            {
-                selectedGameDetails = value;
-                OnPropertyChanged();
-            }
-        }
-
         internal int LastValidSelectedGameIndex;
 
         public List<GamesCollectionViewEntry> SelectedGames
@@ -165,20 +154,14 @@ namespace Playnite.FullscreenApp.ViewModels
                     return;
                 }
 
-                SelectedGameDetails?.Dispose();
-                if (value == null)
-                {
-                    SelectedGameDetails = null;
-                }
-                else
+                if (value != null)
                 {
                     LastValidSelectedGameIndex = GamesView.CollectionView.IndexOf(value);
-                    SelectedGameDetails = new GameDetailsViewModel(value, Resources, GamesEditor, this, Dialogs);
                 }
 
                 selectedGame = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(GameDetailsButtonVisible));
+                OnPropertyChanged(nameof(GameOptionsButtonVisible));
 
                 if (!IsDisposing)
                 {
@@ -211,30 +194,6 @@ namespace Playnite.FullscreenApp.ViewModels
             }
         }
 
-        private bool gameDetailsFocused = false;
-        public bool GameDetailsFocused
-        {
-            get => gameDetailsFocused;
-            set
-            {
-                gameDetailsFocused = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool gameDetailsVisible = false;
-        public bool GameDetailsVisible
-        {
-            get => gameDetailsVisible;
-            set
-            {
-                gameDetailsVisible = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(GameDetailsButtonVisible));
-                OnFullscreenViewChanged(value ? FullscreenView.Details : FullscreenView.List);
-            }
-        }
-
         private bool gameStatusVisible = false;
         public bool GameStatusVisible
         {
@@ -246,7 +205,7 @@ namespace Playnite.FullscreenApp.ViewModels
             }
         }
 
-        public bool GameDetailsButtonVisible => GameDetailsVisible == false && SelectedGame != null;
+        public bool GameOptionsButtonVisible => SelectedGame != null;
 
         private DatabaseExplorer databaseExplorer;
         public DatabaseExplorer DatabaseExplorer
@@ -493,14 +452,7 @@ namespace Playnite.FullscreenApp.ViewModels
             if (GameStatusVisible)
             {
                 GameStatusVisible = false;
-                if (GameDetailsVisible)
-                {
-                    GameDetailsFocused = true;
-                }
-                else
-                {
-                    GameListFocused = true;
-                }
+                GameListFocused = true;
             }
 
             GameStatusView = null;
@@ -508,14 +460,7 @@ namespace Playnite.FullscreenApp.ViewModels
 
         private void Controllers_Starting(object sender, OnGameStartingEventArgs e)
         {
-            if (GameDetailsVisible)
-            {
-                GameDetailsFocused = false;
-            }
-            else
-            {
-                GameListFocused = false;
-            }
+            GameListFocused = false;
 
             if (SelectedGame?.Game.Id == e.Game.Id)
             {
@@ -1221,31 +1166,7 @@ namespace Playnite.FullscreenApp.ViewModels
             }
             else if (model.SelectedAction == RandomGameSelectAction.Navigate)
             {
-                ToggleGameDetailsCommand.Execute(null);
                 SelectGame(model.SelectedGame.Id);
-            }
-        }
-
-        private void OnFullscreenViewChanged(FullscreenView newView)
-        {
-            if (DesignerTools.IsInDesignMode)
-                return;
-
-            var args = new OnFullscreenViewChangedArgs()
-            {
-                NewView = newView
-            };
-
-            foreach (var plugin in Extensions.Plugins.Values)
-            {
-                try
-                {
-                    plugin.Plugin.OnFullscreenViewChanged(args);
-                }
-                catch (Exception exc)
-                {
-                    Logger.Error(exc, $"Plugin {plugin.Description.Id} failed to process OnFullscreenViewChanged event.");
-                }
             }
         }
     }

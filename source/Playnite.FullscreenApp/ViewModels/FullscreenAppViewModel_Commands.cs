@@ -21,7 +21,6 @@ namespace Playnite.FullscreenApp.ViewModels
         public RelayCommand<object> OpenMainMenuCommand { get; private set; }
         public RelayCommand<object> OpenNotificationsMenuCommand { get; private set; }
         public RelayCommand OpenGameMenuCommand { get; private set; }
-        public RelayCommand<object> ToggleGameDetailsCommand { get; private set; }
         public RelayCommand<object> ToggleFiltersCommand { get; private set; }
         public RelayCommand<GameField> LoadSubFilterCommand { get; private set; }
         public RelayCommand<object> CloseSubFilterCommand { get; private set; }
@@ -78,24 +77,7 @@ namespace Playnite.FullscreenApp.ViewModels
             OpenGameMenuCommand = new RelayCommand(() =>
             {
                 OpenGameMenu();
-            }, () => SelectedGameDetails != null);
-
-            ToggleGameDetailsCommand = new RelayCommand<object>((a) =>
-            {
-                GameDetailsVisible = !GameDetailsVisible;
-                GameListVisible = !GameListVisible;
-
-                if (!GameDetailsVisible)
-                {
-                    GameDetailsFocused = false;
-                    GameListFocused = true;
-                }
-                else
-                {
-                    GameDetailsFocused = true;
-                    GameListFocused = false;
-                }
-            }, (a) => SelectedGame != null);
+            }, () => SelectedGame != null);
 
             LoadSubFilterCommand = new RelayCommand<GameField>((gameField) =>
             {

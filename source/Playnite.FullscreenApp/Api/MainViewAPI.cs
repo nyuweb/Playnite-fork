@@ -40,7 +40,7 @@ namespace Playnite.FullscreenApp.API
 
         public FullscreenView ActiveFullscreenView
         {
-            get => mainModel.GameDetailsVisible ? FullscreenView.Details : FullscreenView.List;
+            get => FullscreenView.List;
         }
 
         public SortOrder SortOrder
@@ -150,7 +150,7 @@ namespace Playnite.FullscreenApp.API
 
         public void ToggleFullscreenView()
         {
-            UIDispatcher.Invoke(() => mainModel.ToggleGameDetailsCommand?.Execute(null));
+            // Game details view was removed from Fullscreen mode, there is nothing to toggle.
         }
     }
 }

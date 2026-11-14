@@ -48,7 +48,9 @@ namespace Playnite
                     }
 
                     context.Post((a) => OnPropertyChanged(nameof(Time)), null);
-                    await Task.Delay(10000);
+                    // Time is displayed with minute precision, so wake up once per minute, on the minute.
+                    var now = DateTime.Now;
+                    await Task.Delay(60000 - (now.Second * 1000 + now.Millisecond) + 50);
                 }
             }, watcherToken.Token);
         }

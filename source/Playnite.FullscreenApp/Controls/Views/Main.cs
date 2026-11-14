@@ -39,12 +39,10 @@ namespace Playnite.FullscreenApp.Controls.Views
     [TemplatePart(Name = "PART_ButtonPlay", Type = typeof(ButtonEx))]
     [TemplatePart(Name = "PART_ButtonSearch", Type = typeof(ButtonEx))]
     [TemplatePart(Name = "PART_ButtonFilter", Type = typeof(ButtonEx))]
-    [TemplatePart(Name = "PART_ButtonDetails", Type = typeof(ButtonEx))]
     [TemplatePart(Name = "PART_ButtonGameOptions", Type = typeof(ButtonEx))]
     [TemplatePart(Name = "PART_ElemFilters", Type = typeof(FrameworkElement))]
     [TemplatePart(Name = "PART_ElemFiltersAdditional", Type = typeof(FrameworkElement))]
     [TemplatePart(Name = "PART_ContentFilterItems", Type = typeof(ContentControl))]
-    [TemplatePart(Name = "PART_ElemGameDetails", Type = typeof(FrameworkElement))]
     [TemplatePart(Name = "PART_ImageBackground", Type = typeof(FadeImage))]
     [TemplatePart(Name = "PART_FilterPresetSelector", Type = typeof(FilterPresetSelector))]
     [TemplatePart(Name = "PART_ElemGameStatus", Type = typeof(FrameworkElement))]
@@ -67,12 +65,10 @@ namespace Playnite.FullscreenApp.Controls.Views
         private ButtonEx ButtonPlay;
         private ButtonEx ButtonSearch;
         private ButtonEx ButtonFilter;
-        private ButtonEx ButtonDetails;
         private ButtonEx ButtonGameOptions;
         private FrameworkElement ElemFilters;
         private FrameworkElement ElemFiltersAdditional;
         private ContentControl ContentFilterItems;
-        private FrameworkElement ElemGameDetails;
         private FadeImage ImageBackground;
         private FrameworkElement ElemGameStatus;
 
@@ -103,11 +99,6 @@ namespace Playnite.FullscreenApp.Controls.Views
 
         private void MainModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(FullscreenAppViewModel.GameDetailsVisible))
-            {
-                SetDetailsElemBindings();
-            }
-
             if (e.PropertyName == nameof(FullscreenAppViewModel.ActiveFilterPreset))
             {
                 var panel = ElementTreeHelper.FindVisualChildren<FullscreenTilePanel>(ListGameItems).FirstOrDefault();
@@ -158,15 +149,14 @@ namespace Playnite.FullscreenApp.Controls.Views
             var confirmHint = confirmInput == ControllerInput.B ? "ButtonPromptB" : "ButtonPromptA";
             ListGameItems.InputBindings.Clear();
             ListGameItems.InputBindings.Add(new KeyBinding() { Command = mainModel.OpenGameMenuCommand, Key = swapStartInput ? Key.A : Key.X });
-            ListGameItems.InputBindings.Add(new KeyBinding() { Command = mainModel.ToggleGameDetailsCommand, Key = swapStartInput ? Key.X : Key.A });
+            ListGameItems.InputBindings.Add(new KeyBinding() { Command = mainModel.ActivateSelectedCommand, Key = swapStartInput ? Key.X : Key.A });
             ListGameItems.InputBindings.Add(new KeyBinding() { Command = mainModel.ActivateSelectedCommand, Key = Key.Enter });
             ListGameItems.InputBindings.Add(new GameControllerInputBinding(mainModel.OpenGameMenuCommand, ControllerInput.Start));
-            ListGameItems.InputBindings.Add(new GameControllerInputBinding(mainModel.ToggleGameDetailsCommand, swapStartInput ? ControllerInput.X : confirmInput));
-            ListGameItems.InputBindings.Add(new GameControllerInputBinding(mainModel.ActivateSelectedCommand, swapStartInput ? confirmInput : ControllerInput.X));
+            ListGameItems.InputBindings.Add(new GameControllerInputBinding(mainModel.ActivateSelectedCommand, ControllerInput.X));
+            ListGameItems.InputBindings.Add(new GameControllerInputBinding(mainModel.ActivateSelectedCommand, confirmInput));
 
             ButtonPlay?.SetResourceReference(ButtonEx.InputHintProperty, swapStartInput ? confirmHint : "ButtonPromptX");
             ButtonInstall?.SetResourceReference(ButtonEx.InputHintProperty, swapStartInput ? confirmHint : "ButtonPromptX");
-            ButtonDetails?.SetResourceReference(ButtonEx.InputHintProperty, swapStartInput ? "ButtonPromptX" : confirmHint);
         }
 
         private void SetBackgroundBinding()
@@ -418,17 +408,6 @@ namespace Playnite.FullscreenApp.Controls.Views
                         fallBackValue: Visibility.Collapsed);
                 }
 
-                AssignButtonWithCommand(ref ButtonDetails, "PART_ButtonDetails", mainModel.ToggleGameDetailsCommand);
-                if (ButtonDetails != null)
-                {
-                    BindingTools.SetBinding(
-                        ButtonDetails,
-                        ButtonBase.VisibilityProperty,
-                        mainModel,
-                        nameof(FullscreenAppViewModel.GameDetailsButtonVisible),
-                        converter: new Converters.BooleanToVisibilityConverter());
-                }
-
                 AssignButtonWithCommand(ref ButtonGameOptions, "PART_ButtonGameOptions", mainModel.OpenGameMenuCommand);
                 if (ButtonGameOptions != null)
                 {
@@ -436,7 +415,7 @@ namespace Playnite.FullscreenApp.Controls.Views
                         ButtonGameOptions,
                         ButtonBase.VisibilityProperty,
                         mainModel,
-                        nameof(FullscreenAppViewModel.GameDetailsButtonVisible),
+                        nameof(FullscreenAppViewModel.GameOptionsButtonVisible),
                         converter: new Converters.BooleanToVisibilityConverter());
                     ButtonGameOptions.SetResourceReference(ButtonEx.InputHintProperty, "ButtonPromptStart");
                 }
@@ -480,17 +459,6 @@ namespace Playnite.FullscreenApp.Controls.Views
                         nameof(FullscreenAppViewModel.SubFilterControl));
                 }
 
-                ElemGameDetails = Template.FindName("PART_ElemGameDetails", this) as FrameworkElement;
-                if (ElemGameDetails != null)
-                {
-                    BindingTools.SetBinding(ElemGameDetails,
-                        FrameworkElement.VisibilityProperty,
-                        mainModel,
-                        nameof(FullscreenAppViewModel.GameDetailsVisible),
-                        converter: new Converters.BooleanToVisibilityConverter());
-                    SetDetailsElemBindings();
-                }
-
                 ElemGameStatus = Template.FindName("PART_ElemGameStatus", this) as FrameworkElement;
                 if (ElemGameStatus != null)
                 {
@@ -513,27 +481,7 @@ namespace Playnite.FullscreenApp.Controls.Views
                     this,
                     ApplicationMode.Fullscreen,
                     mainModel,
-                    $"{nameof(FullscreenAppViewModel.SelectedGameDetails)}.{nameof(GameDetailsViewModel.Game)}.{nameof(GameDetailsViewModel.Game.Game)}");
-            }
-        }
-
-        private void SetDetailsElemBindings()
-        {
-            if (ElemGameDetails == null)
-            {
-                return;
-            }
-
-            if (mainModel.GameDetailsVisible)
-            {
-                BindingTools.SetBinding(ElemGameDetails,
-                    FrameworkElement.DataContextProperty,
-                    mainModel,
-                    nameof(FullscreenAppViewModel.SelectedGame));
-            }
-            else
-            {
-                ElemGameDetails.DataContext = null;
+                    $"{nameof(FullscreenAppViewModel.SelectedGame)}.{nameof(GamesCollectionViewEntry.Game)}");
             }
         }
 

@@ -1375,31 +1375,8 @@ namespace Playnite
             }
         }
 
-        private void CheckForAddonUpdates()
-        {
-            try
-            {
-                var updates = Addons.CheckAddonUpdates(ServicesClient);
-                if (updates.HasItems())
-                {
-                    Notifications.Add(MainModelBase.GetAddonUpdatesFoundMessage(updates));
-                }
-            }
-            catch (Exception exc)
-            {
-                logger.Warn(exc, "Failed to process addon update check.");
-            }
-
-            AppSettings.LastAddonUpdateCheck = DateTimes.Now;
-        }
-
         private void UpdateCheckerCallback(object state)
         {
-            if (AppSettings.ShouldCheckAddonUpdatePeriodic())
-            {
-                CheckForAddonUpdates();
-            }
-
             CheckAddonBlacklist();
         }
 
@@ -1418,11 +1395,6 @@ namespace Playnite
 
             await Task.Run(() =>
             {
-                if (AppSettings.ShouldCheckAddonUpdateStartup())
-                {
-                    CheckForAddonUpdates();
-                }
-
                 CheckAddonBlacklist();
             });
 
