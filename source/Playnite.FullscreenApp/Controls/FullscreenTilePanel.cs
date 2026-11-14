@@ -26,9 +26,12 @@ namespace Playnite.FullscreenApp.Controls
         private double itemWidth;
         private double itemHeight;
         private double centerMargin;
+        private double HorizontalSideMargin => double.IsInfinity(viewport.Width) ? 0 : viewport.Width * horizontalSideMarginRatio;
         private int computedRows;
         private int computedColumns;
         private const double marginOffset = 0.5;
+        // Margin on each side of the list with horizontal scrolling, relative to the viewport width.
+        private const double horizontalSideMarginRatio = 0.05;
 
         public event EventHandler<InternalChildrenGeneratedArgs> InternalChildrenGenerated;
 
@@ -329,7 +332,7 @@ namespace Playnite.FullscreenApp.Controls
             {
                 if (computedRows == 0)
                     return new Rect(
-                        itemWidth * 0.25,
+                        HorizontalSideMargin,
                         centerMargin,
                         itemWidth,
                         itemHeight);
@@ -337,7 +340,7 @@ namespace Playnite.FullscreenApp.Controls
                 var row = itemIndex % computedRows;
                 var column = itemIndex < row ? 0 : (int)Math.Floor(itemIndex / (double)computedRows);
                 return new Rect(
-                    (column * itemWidth) + (itemWidth * 0.25),
+                    (column * itemWidth) + HorizontalSideMargin,
                     centerMargin + (row * itemHeight),
                     itemWidth,
                     itemHeight);
@@ -372,7 +375,7 @@ namespace Playnite.FullscreenApp.Controls
 
             if (UseHorizontalLayout)
             {
-                var previousColumns = (int)Math.Ceiling((offset.X - (itemWidth * (marginOffset / 2))) / itemWidth);
+                var previousColumns = (int)Math.Ceiling((offset.X - HorizontalSideMargin) / itemWidth);
                 firstIndex = (int)Math.Ceiling((double)previousColumns * computedRows) - computedRows;
                 if (firstIndex < 0)
                 {
@@ -458,10 +461,10 @@ namespace Playnite.FullscreenApp.Controls
                 if (computedRows == 0)
                     return new Size(centerMargin * 2, viewport.Height);
 
-                // Same margin on both sides (marginOffset / 2 of an item each), items start at itemWidth * 0.25 in GetItemRect.
+                // Same margin on both sides, items start at HorizontalSideMargin in GetItemRect.
                 var totalColumns = (int)Math.Ceiling(itemCount / (double)computedRows);
                 return new Size(
-                    (totalColumns + marginOffset) * itemWidth,
+                    (totalColumns * itemWidth) + (HorizontalSideMargin * 2),
                     viewport.Height);
             }
             else
