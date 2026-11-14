@@ -35,7 +35,7 @@ jobs:
       - name: Run unit tests
         if: ${{ inputs.test_filter != '' }}
         shell: pwsh
-        run: dotnet test source/Tests/Playnite.Tests/Playnite.Tests.csproj -c ${{ inputs.configuration }} -p:Platform=x86 -p:NuGetAudit=false --filter "${{ inputs.test_filter }}"
+        run: dotnet test source/Tests/Playnite.Tests/Playnite.Tests.csproj -c ${{ inputs.configuration }} -p:Platform=x86 --no-build --filter "${{ inputs.test_filter }}"
       - uses: actions/upload-artifact@v4
         with:
           name: playnite-${{ inputs.configuration }}
