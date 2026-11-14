@@ -1,18 +1,32 @@
 name: build
 on:
-  push:
   workflow_dispatch:
+    inputs:
+      configuration:
+        description: Build configuration
+        type: choice
+        options: [Release, Debug]
+        default: Release
 jobs:
   build:
     runs-on: windows-2025
     steps:
       - uses: actions/checkout@v4
       - uses: microsoft/setup-msbuild@v2
-      - run: dotnet restore source/Playnite.slnx
-      - run: msbuild source/Playnite.slnx /p:Configuration=Debug /p:Platform=x86 /m
+      - name: Install powershell-yaml
+        shell: pwsh
+        run: Install-Module powershell-yaml -Force -Scope CurrentUser
+      - name: Build and package
+        shell: pwsh
+        env:
+          LICENSED_DEPS_URL: ${{ secrets.LICENSED_DEPENDENCIES_URL }}
+        run: |
+          $msbuild = (Get-Command msbuild).Source
+          $args = @("-Configuration", "${{ inputs.configuration }}", "-Package", "-MSBuildPath", $msbuild)
+          if ($env:LICENSED_DEPS_URL) { $args += @("-LicensedDependenciesUrl", $env:LICENSED_DEPS_URL) }
+          ./build/build.ps1 @args
       - uses: actions/upload-artifact@v4
         with:
-          name: playnite-debug
-          path: |
-            source/Playnite.DesktopApp/bin/
-            source/Playnite.FullscreenApp/bin/
+          name: playnite-${{ inputs.configuration }}
+          path: build/Playnite.zip
+          if-no-files-found: error
