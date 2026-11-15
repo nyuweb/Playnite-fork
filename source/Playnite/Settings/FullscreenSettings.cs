@@ -171,6 +171,21 @@ namespace Playnite
             }
         }
 
+        private int horizontalLayoutMaxGames = 10;
+        public int HorizontalLayoutMaxGames
+        {
+            get
+            {
+                return horizontalLayoutMaxGames;
+            }
+
+            set
+            {
+                horizontalLayoutMaxGames = Math.Max(5, Math.Min(20, value));
+                OnPropertyChanged();
+            }
+        }
+
         private int bottomPanelOpacity = 100;
         public int BottomPanelOpacity
         {

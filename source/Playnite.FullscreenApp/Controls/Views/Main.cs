@@ -57,6 +57,9 @@ namespace Playnite.FullscreenApp.Controls.Views
         private FrameworkElement ElemExtraFilterActive;
         private FrameworkElement ElemSearchActive;
         private ListBox ListGameItems;
+        private LimitedGameList limitedGames;
+        private RelayCommand<object> activateListItemCommand;
+        private RelayCommand<object> openGameMenuListCommand;
         private ButtonEx ButtonInstall;
         private ButtonEx ButtonPlay;
         private ButtonEx ButtonSearch;
@@ -91,11 +94,65 @@ namespace Playnite.FullscreenApp.Controls.Views
 
             this.mainModel.AppSettings.Fullscreen.PropertyChanged += Fullscreen_PropertyChanged;
             this.mainModel.PropertyChanged += MainModel_PropertyChanged;
+
+            activateListItemCommand = new RelayCommand<object>(
+                (a) =>
+                {
+                    if (ListGameItems?.SelectedItem is MoreGamesItem)
+                    {
+                        this.mainModel.OpenMoreGames();
+                    }
+                    else
+                    {
+                        this.mainModel.ActivateSelectedCommand.Execute(a);
+                    }
+                },
+                (a) => ListGameItems?.SelectedItem is MoreGamesItem || this.mainModel.ActivateSelectedCommand.CanExecute(a));
+
+            openGameMenuListCommand = new RelayCommand<object>(
+                (a) =>
+                {
+                    if (!(ListGameItems?.SelectedItem is MoreGamesItem))
+                    {
+                        this.mainModel.OpenGameMenuCommand.Execute();
+                    }
+                },
+                (a) => !(ListGameItems?.SelectedItem is MoreGamesItem) && this.mainModel.OpenGameMenuCommand.CanExecute());
+        }
+
+        private bool IsInGameList(object item)
+        {
+            return limitedGames == null || !mainModel.AppSettings.Fullscreen.HorizontalLayout || limitedGames.Contains(item);
+        }
+
+        private void UpdateGameListSource()
+        {
+            if (ListGameItems == null)
+            {
+                return;
+            }
+
+            limitedGames?.Dispose();
+            limitedGames = null;
+            var view = mainModel.GamesView?.CollectionView;
+            if (view != null && mainModel.AppSettings.Fullscreen.HorizontalLayout)
+            {
+                limitedGames = new LimitedGameList(view, mainModel.AppSettings.Fullscreen);
+                ListGameItems.ItemsSource = limitedGames;
+            }
+            else
+            {
+                ListGameItems.ItemsSource = view;
+            }
         }
 
         private void MainModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(FullscreenAppViewModel.ActiveFilterPreset))
+            if (e.PropertyName == nameof(FullscreenAppViewModel.GamesView))
+            {
+                UpdateGameListSource();
+            }
+            else if (e.PropertyName == nameof(FullscreenAppViewModel.ActiveFilterPreset))
             {
                 var panel = ElementTreeHelper.FindVisualChildren<FullscreenTilePanel>(ListGameItems).FirstOrDefault();
                 if (panel == null)
@@ -116,7 +173,16 @@ namespace Playnite.FullscreenApp.Controls.Views
 
         private void Fullscreen_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(FullscreenSettings.EnableMainBackgroundImage))
+            if (e.PropertyName == nameof(FullscreenSettings.HorizontalLayout))
+            {
+                var selected = mainModel.SelectedGame;
+                UpdateGameListSource();
+                if (selected != null)
+                {
+                    Dispatcher.BeginInvoke(new Action(() => mainModel.SelectedGame = selected), System.Windows.Threading.DispatcherPriority.Background);
+                }
+            }
+            else if (e.PropertyName == nameof(FullscreenSettings.EnableMainBackgroundImage))
             {
                 SetBackgroundBinding();
             }
@@ -144,12 +210,12 @@ namespace Playnite.FullscreenApp.Controls.Views
             var confirmInput = GameControllerGesture.ConfirmationBinding;
             var confirmHint = confirmInput == ControllerInput.B ? "ButtonPromptB" : "ButtonPromptA";
             ListGameItems.InputBindings.Clear();
-            ListGameItems.InputBindings.Add(new KeyBinding() { Command = mainModel.OpenGameMenuCommand, Key = swapStartInput ? Key.A : Key.X });
-            ListGameItems.InputBindings.Add(new KeyBinding() { Command = mainModel.ActivateSelectedCommand, Key = swapStartInput ? Key.X : Key.A });
-            ListGameItems.InputBindings.Add(new KeyBinding() { Command = mainModel.ActivateSelectedCommand, Key = Key.Enter });
-            ListGameItems.InputBindings.Add(new GameControllerInputBinding(mainModel.OpenGameMenuCommand, ControllerInput.Start));
-            ListGameItems.InputBindings.Add(new GameControllerInputBinding(mainModel.ActivateSelectedCommand, ControllerInput.X));
-            ListGameItems.InputBindings.Add(new GameControllerInputBinding(mainModel.ActivateSelectedCommand, confirmInput));
+            ListGameItems.InputBindings.Add(new KeyBinding() { Command = openGameMenuListCommand, Key = swapStartInput ? Key.A : Key.X });
+            ListGameItems.InputBindings.Add(new KeyBinding() { Command = activateListItemCommand, Key = swapStartInput ? Key.X : Key.A });
+            ListGameItems.InputBindings.Add(new KeyBinding() { Command = activateListItemCommand, Key = Key.Enter });
+            ListGameItems.InputBindings.Add(new GameControllerInputBinding(openGameMenuListCommand, ControllerInput.Start));
+            ListGameItems.InputBindings.Add(new GameControllerInputBinding(activateListItemCommand, ControllerInput.X));
+            ListGameItems.InputBindings.Add(new GameControllerInputBinding(activateListItemCommand, confirmInput));
 
             ButtonPlay?.SetResourceReference(ButtonEx.InputHintProperty, swapStartInput ? confirmHint : "ButtonPromptX");
             ButtonInstall?.SetResourceReference(ButtonEx.InputHintProperty, swapStartInput ? confirmHint : "ButtonPromptX");
@@ -325,11 +391,14 @@ namespace Playnite.FullscreenApp.Controls.Views
                                 new XAttribute(nameof(FullscreenTilePanel.SmoothScrollEnabled), "{Settings Fullscreen.SmoothScrolling}")))
                     ).ToString());
 
-                    ListGameItems.ItemTemplate = Xaml.FromString<DataTemplate>(new XDocument(
-                        new XElement(pns + nameof(DataTemplate),
-                            new XElement(pns + nameof(GameListItem),
-                                new XAttribute(nameof(GameListItem.Style), "{StaticResource ListGameItemTemplate}")))
-                    ).ToString());
+                    ListGameItems.ItemTemplateSelector = new GameListTemplateSelector
+                    {
+                        GameTemplate = Xaml.FromString<DataTemplate>(new XDocument(
+                            new XElement(pns + nameof(DataTemplate),
+                                new XElement(pns + nameof(GameListItem),
+                                    new XAttribute(nameof(GameListItem.Style), "{StaticResource ListGameItemTemplate}")))
+                        ).ToString())
+                    };
 
                     ListGameItems.SetResourceReference(ListBoxEx.ItemContainerStyleProperty, "ListGameItemStyle");
 
@@ -342,11 +411,9 @@ namespace Playnite.FullscreenApp.Controls.Views
                         ListBox.SelectedItemProperty,
                         mainModel,
                         nameof(FullscreenAppViewModel.SelectedGame),
-                        BindingMode.TwoWay);
-                    BindingTools.SetBinding(ListGameItems,
-                        ListBox.ItemsSourceProperty,
-                        mainModel,
-                        $"{nameof(FullscreenAppViewModel.GamesView)}.{nameof(FullscreenCollectionView.CollectionView)}");
+                        BindingMode.TwoWay,
+                        converter: new GameListSelectionConverter(IsInGameList));
+                    UpdateGameListSource();
                     BindingTools.SetBinding(ListGameItems,
                         FocusBahaviors.FocusBindingProperty,
                         mainModel,

@@ -4,6 +4,23 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                     mc:Ignorable="d">
 
+    <!-- Last tile of the horizontal list, opens the grid with all games -->
+    <DataTemplate x:Key="MoreGamesItemTemplate">
+        <Border Background="#CC2B2B2B" CornerRadius="5">
+            <Viewbox Margin="60" Stretch="Uniform">
+                <Grid Width="100" Height="100">
+                    <Ellipse Stroke="White" StrokeThickness="6" />
+                    <UniformGrid Rows="2" Columns="2" Margin="26">
+                        <Border Background="White" CornerRadius="4" Margin="4" />
+                        <Border Background="White" CornerRadius="4" Margin="4" />
+                        <Border Background="White" CornerRadius="4" Margin="4" />
+                        <Border Background="White" CornerRadius="4" Margin="4" />
+                    </UniformGrid>
+                </Grid>
+            </Viewbox>
+        </Border>
+    </DataTemplate>
+
     <Style x:Key="ListGameItemTemplate" TargetType="{x:Type GameListItem}">
         <Setter Property="Template">
             <Setter.Value>

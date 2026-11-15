@@ -1,0 +1,56 @@
+﻿<c:WindowBase x:Class="Playnite.FullscreenApp.Windows.MoreGamesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Playnite.FullscreenApp.Windows"
+        xmlns:c="clr-namespace:Playnite.Controls;assembly=Playnite"
+        xmlns:pbeh="clr-namespace:Playnite.Behaviors;assembly=Playnite"
+        xmlns:pctrls="clr-namespace:Playnite.FullscreenApp.Controls"
+        xmlns:pin="clr-namespace:Playnite.Input;assembly=Playnite"
+        mc:Ignorable="d"
+        Style="{StaticResource ChildWindowStyle}"
+        ShowMinimizeButton="False" ShowMaximizeButton="False" ShowCloseButton="False"
+        ShowInTaskbar="False" WindowStyle="None"
+        ResizeMode="NoResize"
+        d:DesignWidth="1920" d:DesignHeight="1080">
+
+    <c:WindowBase.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding CloseCommand}" />
+        <KeyBinding Key="Backspace" Command="{Binding CloseCommand}" />
+        <KeyBinding Key="Enter" Command="{Binding ActivateCommand}" />
+        <pin:GameControllerInputBinding Button="{Binding Path=(pin:GameControllerGesture.CancellationBinding)}" Command="{Binding CloseCommand}" />
+        <pin:GameControllerInputBinding Button="{Binding Path=(pin:GameControllerGesture.ConfirmationBinding)}" Command="{Binding ActivateCommand}" />
+        <pin:GameControllerInputBinding Button="X" Command="{Binding ActivateCommand}" />
+        <pin:GameControllerInputBinding Button="Start" Command="{Binding OpenGameMenuCommand}" />
+    </c:WindowBase.InputBindings>
+
+    <Viewbox>
+        <Grid Height="1080" Width="1920" Name="GridMain" Background="#E6000000">
+            <Border Margin="60" CornerRadius="14"
+                    Background="{DynamicResource BottomPanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource BottomPanelBorderBrush}" BorderThickness="2">
+                <Grid Margin="30,20,30,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{Binding Title}" Margin="10,0,0,15"
+                               FontSize="34" FontWeight="SemiBold"
+                               Foreground="{DynamicResource BottomPanelForegroundBrush}" />
+
+                    <pctrls:ListBoxEx x:Name="ListMoreGames" Grid.Row="1"
+                                      Background="#00000000" BorderThickness="0" FocusVisualStyle="{x:Null}"
+                                      KeyboardNavigation.DirectionalNavigation="Once"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                      VirtualizingPanel.IsVirtualizing="True"
+                                      pbeh:FocusBahaviors.FocusBinding="True"
+                                      ItemsSource="{Binding Games}"
+                                      SelectedItem="{Binding SelectedGame, Mode=TwoWay}" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Viewbox>
+</c:WindowBase>

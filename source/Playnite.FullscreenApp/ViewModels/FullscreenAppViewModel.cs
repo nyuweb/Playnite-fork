@@ -705,6 +705,14 @@ namespace Playnite.FullscreenApp.ViewModels
             GameListFocused = true;
         }
 
+        public void OpenMoreGames()
+        {
+            var vm = new MoreGamesViewModel(new MoreGamesWindowFactory(), this);
+            vm.OpenView();
+            GameListFocused = false;
+            GameListFocused = true;
+        }
+
         public void OpenGameMenu()
         {
             var vm = new GameMenuViewModel(new GameMenuWindowFactory(), this, SelectedGame.Game, GamesEditor);

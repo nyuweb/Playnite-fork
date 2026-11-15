@@ -51,6 +51,25 @@ namespace Playnite.FullscreenApp.Controls.SettingsSections
                     BindingMode.OneWay,
                     UpdateSourceTrigger.PropertyChanged);
 
+            SliderMaxGames.Minimum = 5;
+            SliderMaxGames.Maximum = 20;
+            SliderMaxGames.TickFrequency = 1;
+            SliderMaxGames.IsSnapToTickEnabled = true;
+            BindingTools.SetBinding(
+                SliderMaxGames,
+                Slider.ValueProperty,
+                mainModel.AppSettings.Fullscreen,
+                nameof(FullscreenSettings.HorizontalLayoutMaxGames),
+                BindingMode.TwoWay,
+                UpdateSourceTrigger.PropertyChanged);
+            BindingTools.SetBinding(
+                    SliderMaxGames,
+                    Slider.IsEnabledProperty,
+                    mainModel.AppSettings.Fullscreen,
+                    nameof(FullscreenSettings.HorizontalLayout),
+                    BindingMode.OneWay,
+                    UpdateSourceTrigger.PropertyChanged);
+
             SliderRows.Minimum = 1;
             SliderRows.Maximum = 50;
             SliderRows.TickFrequency = 1;
