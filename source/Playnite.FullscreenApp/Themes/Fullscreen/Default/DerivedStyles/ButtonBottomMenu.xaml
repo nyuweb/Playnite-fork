@@ -11,13 +11,14 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ButtonEx">
                     <Border Background="{TemplateBinding Background}"
-                            Margin="20,0,20,0">
+                            Margin="20,0,20,0"
+                             CornerRadius="40">
                         <StackPanel Orientation="Horizontal">
                             <ContentControl ContentTemplate="{TemplateBinding InputHint}"
                                             Height="30" VerticalAlignment="Center"
                                             Margin="0,0,10,0" Focusable="False"/>
                             <TextBlock Style="{DynamicResource TextBlockBaseStyle}"
-                                       FontFamily="{DynamicResource FontTitilliumWeb}"
+                                       FontFamily="{DynamicResource FontFamilyBold}" FontSize="25"
                                        VerticalAlignment="Center">
                                 <ContentPresenter />
                             </TextBlock>

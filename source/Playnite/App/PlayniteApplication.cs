@@ -267,19 +267,6 @@ namespace Playnite
                 {
                     WaitForOtherInstacesToExit(false);
                     ExtensionsInstallResult = ExtensionInstaller.InstallExtensionQueue();
-                    var installedTheme = ExtensionsInstallResult.FirstOrDefault(a => a.InstalledManifest is ThemeManifest && !a.Updated);
-                    if (installedTheme?.InstalledManifest != null)
-                    {
-                        var theme = installedTheme.InstalledManifest as ThemeManifest;
-                        if (theme.Mode == ApplicationMode.Desktop)
-                        {
-                            AppSettings.Theme = theme.Id;
-                        }
-                        else
-                        {
-                            AppSettings.Fullscreen.Theme = theme.Id;
-                        }
-                    }
                 }
                 catch (Exception e) when (!PlayniteEnvironment.ThrowAllErrors)
                 {
@@ -296,28 +283,21 @@ namespace Playnite
                 }
                 else
                 {
+                    // Custom themes are not supported in this fork, the built-in theme is always used.
                     var theme = mode == ApplicationMode.Desktop ? AppSettings.Theme : AppSettings.Fullscreen.Theme;
                     if (theme != ThemeManager.DefaultTheme.Id)
                     {
-                        customTheme = ThemeManager.GetAvailableThemes(mode).Where(a => a.Id == theme).OrderByDescending(a => a.Version).FirstOrDefault();
-                        if (customTheme == null)
+                        logger.Warn($"Ignoring custom theme {theme}, custom themes are disabled.");
+                        if (mode == ApplicationMode.Desktop)
                         {
-                            logger.Error($"Failed to apply theme {theme}, theme not found.");
-                            if (mode == ApplicationMode.Desktop)
-                            {
-                                AppSettings.Theme = ThemeManager.DefaultDesktopThemeId;
-                            }
-                            else
-                            {
-                                AppSettings.Fullscreen.Theme = ThemeManager.DefaultFullscreenThemeId;
-                            }
-
-                            ThemeManager.SetCurrentTheme(defaultTheme);
+                            AppSettings.Theme = ThemeManager.DefaultDesktopThemeId;
                         }
                         else
                         {
-                            ThemeManager.SetCurrentTheme(customTheme);
+                            AppSettings.Fullscreen.Theme = ThemeManager.DefaultFullscreenThemeId;
                         }
+
+                        ThemeManager.SetCurrentTheme(defaultTheme);
                     }
                 }
 
@@ -1470,6 +1450,12 @@ namespace Playnite
                     return;
                 }
 
+                if (addon.IsTheme)
+                {
+                    Dialogs.ShowErrorMessage("Custom themes are not supported in this version of Playnite.", "");
+                    return;
+                }
+
                 var message = string.Format(
                     ResourceProvider.GetString(addon.IsTheme ? LOC.ThemeInstallPrompt : LOC.ExtensionInstallPrompt),
                     addon.Name, addon.Author, package.Version);
@@ -1545,51 +1531,7 @@ namespace Playnite
 
         public void InstallThemeFile(string themeFile)
         {
-            try
-            {
-                ExtensionInstaller.VerifyThemePackage(themeFile);
-                var desc = ExtensionInstaller.GetPackedThemeManifest(themeFile);
-                desc.VerifyManifest();
-
-                if (new Version(desc.ThemeApiVersion).Major != ThemeManager.GetApiVersion(desc.Mode).Major)
-                {
-                    throw new Exception(ResourceProvider.GetString("LOCGeneralExtensionInstallApiVersionFails"));
-                }
-
-                var message = string.Format(ResourceProvider.GetString("LOCThemeInstallPrompt"),
-                    desc.Name, desc.Author, desc.Version);
-                var existing = ThemeManager.GetAvailableThemes(desc.Mode).FirstOrDefault(a => a.Id == desc.Id);
-                if (existing != null)
-                {
-                    message = string.Format(ResourceProvider.GetString("LOCThemeUpdatePrompt"),
-                        desc.Name, existing.Version, desc.Version);
-                }
-
-                if (Dialogs.ShowMessage(
-                        message,
-                        ResourceProvider.GetString("LOCGeneralExtensionInstallTitle"),
-                        MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    ShowAddonPerfNotice();
-                    ExtensionInstaller.QueuePackageInstall(themeFile);
-                    if (Dialogs.ShowMessage(
-                        ResourceProvider.GetString("LOCExtInstallationRestartNotif"),
-                        ResourceProvider.GetString("LOCSettingsRestartTitle"),
-                        MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                    {
-                        Restart(new CmdLineOptions()
-                        {
-                            SkipLibUpdate = true,
-                        });
-                    };
-                }
-            }
-            catch (Exception e) when (!PlayniteEnvironment.ThrowAllErrors)
-            {
-                logger.Error(e, "Failed to install theme.");
-                Dialogs.ShowErrorMessage(
-                    string.Format(ResourceProvider.GetString("LOCThemeInstallFail"), e.Message), "");
-            }
+            Dialogs.ShowErrorMessage("Custom themes are not supported in this version of Playnite.", "");
         }
 
         public void InstallExtensionFile(string extensionFile)

@@ -300,7 +300,8 @@ namespace Playnite
             var result = new List<ThemeManifest>();
             result.AddRange(ExtensionFactory.DeduplicateExtList(user).Cast<ThemeManifest>());
             result.AddRange(ExtensionFactory.DeduplicateExtList(install).Cast<ThemeManifest>());
-            return result;
+            // Custom themes are not supported in this fork, only the built-in theme is available.
+            return result.Where(a => a.DirectoryName == DefaultThemeDirName && a.DirectoryPath.StartsWith(PlaynitePaths.ThemesProgramPath, StringComparison.OrdinalIgnoreCase)).ToList();
         }
     }
 }

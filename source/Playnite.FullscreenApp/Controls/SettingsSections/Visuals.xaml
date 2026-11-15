@@ -14,7 +14,7 @@
             <Style TargetType="pctrls:SliderEx" BasedOn="{StaticResource SettingsSectionSlider}" />
         </StackPanel.Resources>
 
-        <DockPanel LastChildFill="False">
+        <DockPanel LastChildFill="False" Visibility="Collapsed">
             <TextBlock Text="{DynamicResource LOCSettingsSkin}"
                        Style="{DynamicResource SettingsSectionText}"/>
             <TextBlock Text="*" Margin="5,0,0,0"

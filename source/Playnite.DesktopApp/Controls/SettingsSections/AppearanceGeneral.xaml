@@ -24,7 +24,7 @@
     </UserControl.Resources>
 
     <StackPanel Margin="20">
-        <GridEx AutoLayoutColumns="4" RowCount="2" ColumnCount="4">
+        <GridEx AutoLayoutColumns="4" RowCount="2" ColumnCount="4" Visibility="Collapsed">
             <ContentControl VerticalAlignment="Center"
                             Content="{DynamicResource LOCSettingsSkin}"
                             ContentStringFormat="{}{0} *"/>
