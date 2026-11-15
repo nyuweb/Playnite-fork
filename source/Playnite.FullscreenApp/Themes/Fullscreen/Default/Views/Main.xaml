@@ -711,6 +711,7 @@
 
                                                 <DataTrigger Binding="{Binding ElementName=ChangeViewButton, Path=IsChecked}" Value="true">
                                                     <Setter Property="ItemsControl.Height" Value="0"/>
+                                                    <Setter Property="ItemsControl.Margin" Value="0,-60,0,0"/>
                                                 </DataTrigger>
 
                                                 <DataTrigger Binding="{Binding ElementName=ChangeViewButton, Path=IsChecked}" Value="false">
