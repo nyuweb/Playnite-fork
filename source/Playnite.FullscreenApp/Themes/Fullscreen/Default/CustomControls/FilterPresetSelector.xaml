@@ -15,7 +15,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBoxEx">
 
-                    <Grid x:Name="GridBox" Margin="6,26,6,0" Height="82" MinWidth="82" UseLayoutRounding="True" Opacity="0.75">
+                    <Grid x:Name="GridBox" Margin="8,26,8,0" Height="82" MinWidth="82" UseLayoutRounding="True" Opacity="0.75">
 
                         <Border x:Name="PillBorder" CornerRadius="31" BorderThickness="2" Padding="15"
                                 Background="Transparent" BorderBrush="Transparent">
