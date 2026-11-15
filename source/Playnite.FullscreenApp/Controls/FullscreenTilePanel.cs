@@ -136,6 +136,33 @@ namespace Playnite.FullscreenApp.Controls
             }
         }
 
+        public static readonly DependencyProperty FixedColumnsProperty = DependencyProperty.RegisterAttached(
+            nameof(FixedColumns),
+            typeof(int),
+            typeof(FullscreenTilePanel),
+            new FrameworkPropertyMetadata(0, OnLayoutPropertyChanged));
+
+        /// <summary>
+        /// Vertical layout only: number of columns, tile size is computed from the width instead of Rows.
+        /// 0 keeps the default behavior where Rows defines the tile size.
+        /// </summary>
+        public int FixedColumns
+        {
+            get
+            {
+                return (int)GetValue(FixedColumnsProperty);
+            }
+
+            set
+            {
+                SetValue(FixedColumnsProperty, value);
+            }
+        }
+
+        private bool UseFixedColumns => !UseHorizontalLayout && FixedColumns > 0;
+
+        private double VerticalTopOffset => UseFixedColumns ? 0 : (marginOffset / 2) * itemHeight;
+
         public static readonly DependencyProperty ColumnsProperty = DependencyProperty.RegisterAttached(
             nameof(Columns),
             typeof(int),
@@ -350,7 +377,7 @@ namespace Playnite.FullscreenApp.Controls
                 if (computedColumns == 0)
                     return new Rect(
                         centerMargin,
-                        (marginOffset / 2) * itemHeight,
+                        VerticalTopOffset,
                         itemWidth,
                         itemHeight);
 
@@ -358,7 +385,7 @@ namespace Playnite.FullscreenApp.Controls
                 var row = itemIndex < column ? 0 : (int)Math.Floor(itemIndex / (double)computedColumns);
                 return new Rect(
                     centerMargin + (column * itemWidth),
-                    (row * itemHeight) + ((marginOffset / 2) * itemHeight),
+                    (row * itemHeight) + VerticalTopOffset,
                     itemWidth,
                     itemHeight);
             }
@@ -390,14 +417,15 @@ namespace Playnite.FullscreenApp.Controls
             }
             else
             {
-                var previousRows = (int)Math.Ceiling((offset.Y - (itemHeight * (marginOffset / 2))) / itemHeight);
+                var previousRows = (int)Math.Ceiling((offset.Y - VerticalTopOffset) / itemHeight);
+                var visibleRows = UseFixedColumns ? (int)Math.Ceiling(viewport.Height / itemHeight) : Rows;
                 firstIndex = (int)Math.Ceiling((double)previousRows * computedColumns) - computedColumns;
                 if (firstIndex < 0)
                 {
                     firstIndex = 0;
                 }
 
-                lastIndex = (previousRows * computedColumns) + (computedColumns * (Rows + 1)) - 1;
+                lastIndex = (previousRows * computedColumns) + (computedColumns * (visibleRows + 1)) - 1;
                 if (lastIndex >= itemCount)
                 {
                     lastIndex = itemCount;
@@ -475,7 +503,7 @@ namespace Playnite.FullscreenApp.Controls
                 var totalRows = (int)Math.Ceiling(itemCount / (double)computedColumns);
                 return new Size(
                     viewport.Width,
-                    (totalRows + marginOffset) * itemHeight);
+                    (totalRows + (UseFixedColumns ? 0 : marginOffset)) * itemHeight);
             }
         }
 
@@ -554,6 +582,12 @@ namespace Playnite.FullscreenApp.Controls
                 }
 
                 computedRows = (int)Math.Floor(viewport.Height / itemHeight);
+            }
+            else if (UseFixedColumns)
+            {
+                computedColumns = FixedColumns;
+                itemWidth = viewport.Width * (1 - (horizontalSideMarginRatio * 2)) / FixedColumns;
+                itemHeight = ItemAspectRatio.GetHeight(itemWidth);
             }
             else
             {

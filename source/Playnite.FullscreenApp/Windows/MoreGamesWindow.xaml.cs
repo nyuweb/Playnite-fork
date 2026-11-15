@@ -34,7 +34,7 @@ namespace Playnite.FullscreenApp.Windows
                 new XElement(pns + nameof(ItemsPanelTemplate),
                     new XElement(pns + nameof(FullscreenTilePanel),
                         new XAttribute(nameof(FullscreenTilePanel.Rows), "{Settings Fullscreen.Rows}"),
-                        new XAttribute(nameof(FullscreenTilePanel.Columns), "{Settings Fullscreen.MoreGamesColumns}"),
+                        new XAttribute(nameof(FullscreenTilePanel.FixedColumns), "{Settings Fullscreen.MoreGamesColumns}"),
                         new XAttribute(nameof(FullscreenTilePanel.UseHorizontalLayout), "False"),
                         new XAttribute(nameof(FullscreenTilePanel.ItemAspectRatio), "{Settings CoverAspectRatio}"),
                         new XAttribute(nameof(FullscreenTilePanel.ItemSpacing), "{Settings FullscreenItemSpacing}"),

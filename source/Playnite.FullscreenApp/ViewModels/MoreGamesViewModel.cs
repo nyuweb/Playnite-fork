@@ -36,10 +36,15 @@ namespace Playnite.FullscreenApp.ViewModels
         {
             if (SelectedGame != null)
             {
+                // Launch only after the modal window is fully closed, same as launching from the main list.
                 var game = SelectedGame;
+                pendingAction = () =>
+                {
+                    MainModel.SelectedGame = game;
+                    MainModel.ActivateSelectedCommand.Execute(a);
+                };
+
                 Close();
-                MainModel.SelectedGame = game;
-                MainModel.ActivateSelectedCommand.Execute(a);
             }
         });
 
@@ -51,6 +56,15 @@ namespace Playnite.FullscreenApp.ViewModels
                 MainModel.OpenGameMenu();
             }
         });
+
+        private Action pendingAction;
+
+        public void RunPendingAction()
+        {
+            var action = pendingAction;
+            pendingAction = null;
+            action?.Invoke();
+        }
 
         public MoreGamesViewModel(IWindowFactory window, FullscreenAppViewModel mainModel)
         {
