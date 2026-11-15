@@ -18,19 +18,19 @@
     <Color x:Key="GridItemBackgroundColor">#FF252525</Color>
 	<Color x:Key="MainColorDark">#1E1D1D</Color>
 
-    <Color x:Key="GlyphColor">#FF2670b8</Color>
+    <Color x:Key="GlyphColor">#FF8A8A8A</Color>
     <Color x:Key="GlyphLightColor">White</Color>
 
     <Color x:Key="GlyphColorTwo">#FFcd7a2a</Color>
     <Color x:Key="GlyphLightColorTwo">White</Color>
 
-    <Color x:Key="BorderDark">#80205f9c</Color>
-    <Color x:Key="BorderLight">#2a7dcd</Color>
-    <Color x:Key="BorderBright">#66a4e0</Color>
+    <Color x:Key="BorderDark">#80404040</Color>
+    <Color x:Key="BorderLight">#FFA0A0A0</Color>
+    <Color x:Key="BorderBright">#FFC8C8C8</Color>
 	
-    <Color x:Key="CoverDark">#802a3039</Color>
-    <Color x:Key="CoverLight">#a2899d</Color>
-    <Color x:Key="CoverBright">#66a4e0</Color>
+    <Color x:Key="CoverDark">#80303030</Color>
+    <Color x:Key="CoverLight">#FFA0A0A0</Color>
+    <Color x:Key="CoverBright">#FFC8C8C8</Color>
 		
     <Color x:Key="Background">#171717</Color>
 	<Color x:Key="SubBackground">#16171b</Color>
