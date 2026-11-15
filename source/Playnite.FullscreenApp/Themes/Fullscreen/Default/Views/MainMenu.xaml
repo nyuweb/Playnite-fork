@@ -150,21 +150,6 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate x:Key="MainMenuPatreonButtonTemplate">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{DynamicResource LOCMenuPatreonSupport}" VerticalAlignment="Center" />
-			<TextBlock Text="&#xe716;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="24"
-			   VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,20,0"/>
-        </StackPanel>
-    </DataTemplate>
-
-    <!-- Added from stock Playnite default theme (not present in J-Hero) -->
-    <DataTemplate x:Key="MainMenuKofiButtonTemplate">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{DynamicResource LOCMenuKofiSupport}" VerticalAlignment="Center" />
-        </StackPanel>
-    </DataTemplate>
-
     <DataTemplate x:Key="MainMenuMinimizeButtonTemplate">
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{DynamicResource LOCMinimize}" VerticalAlignment="Center" />
