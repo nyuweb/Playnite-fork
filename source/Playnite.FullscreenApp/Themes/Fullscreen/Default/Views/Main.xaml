@@ -813,7 +813,11 @@
                                     </Style>
                                 </StackPanel.Style>
 
-                                <FilterPresetSelector x:Name="ALTItemsFilterPresets" FocusVisualStyle="{x:Null}" />
+                                <FilterPresetSelector x:Name="ALTItemsFilterPresets" FocusVisualStyle="{x:Null}">
+                                    <FilterPresetSelector.RenderTransform>
+                                        <TranslateTransform Y="-16" />
+                                    </FilterPresetSelector.RenderTransform>
+                                </FilterPresetSelector>
 
                             </StackPanel>
 
