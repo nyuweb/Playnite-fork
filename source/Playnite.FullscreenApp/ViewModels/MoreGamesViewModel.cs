@@ -1,4 +1,5 @@
-﻿using Playnite.SDK;
+﻿using Playnite.Common;
+using Playnite.SDK;
 using Playnite.ViewModels;
 using Playnite.Windows;
 using System;
