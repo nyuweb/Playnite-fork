@@ -17,7 +17,7 @@
 
                     <Grid x:Name="GridBox" Margin="4,26,4,0" Height="82" MinWidth="82" UseLayoutRounding="True" Opacity="0.75">
 
-                        <Border x:Name="PillBorder" CornerRadius="31" BorderThickness="2" Padding="13"
+                        <Border x:Name="PillBorder" CornerRadius="31" BorderThickness="2" Padding="15"
                                 Background="Transparent" BorderBrush="Transparent">
                             <Grid>
                                 <Image x:Name="FilterIcon" RenderOptions.BitmapScalingMode="Fant" Height="48" Stretch="Uniform"
