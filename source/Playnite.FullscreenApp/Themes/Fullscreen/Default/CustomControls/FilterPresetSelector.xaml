@@ -62,11 +62,9 @@
         </Setter>
     </Style>
 
-    <!-- Header of the "More" grid: platform logo in the same pill as the current platform -->
+    <!-- Header of the "More" grid: platform logo (or name) without the pill background and border -->
     <DataTemplate x:Key="MoreGamesHeaderTemplate">
-        <Border CornerRadius="31" BorderThickness="2" Padding="15" Height="82" HorizontalAlignment="Left"
-                Background="{DynamicResource BottomPanelBackgroundBrush}"
-                BorderBrush="{DynamicResource BottomPanelBorderBrush}">
+        <Border Height="48" HorizontalAlignment="Left">
             <Grid>
                 <Image x:Name="HeaderIcon" RenderOptions.BitmapScalingMode="Fant" Height="48" Stretch="Uniform"
                        Source="{ThemeFileBinding Title, PathFormat='Icons/Filter/{0}.png'}"

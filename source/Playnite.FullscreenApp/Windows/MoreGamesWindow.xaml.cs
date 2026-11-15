@@ -27,7 +27,10 @@ namespace Playnite.FullscreenApp.Windows
             InitializeComponent();
             WindowTools.ConfigureChildWindow(this);
             // 3.5% margin on every side, same ratio as the horizontal list side margins.
-            PanelBorder.Margin = new Thickness(GridMain.Width * 0.035);
+            // Horizontal margins are handled by the tiles themselves.
+            var margin = GridMain.Width * 0.035;
+            PanelBorder.Margin = new Thickness(0, margin, 0, margin);
+            HeaderHost.Margin = new Thickness(margin, 5, 0, 10);
 
             XNamespace pns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
             ListMoreGames.ItemsPanel = Xaml.FromString<ItemsPanelTemplate>(new XDocument(

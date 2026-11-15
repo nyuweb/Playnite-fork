@@ -58,7 +58,7 @@
                                 <ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
                             </Grid.RenderTransform>
                             <ContentPresenter />
-                            <Border x:Name="MainBorder" Opacity="0" BorderThickness="6" Margin="-6" CornerRadius="10" Style="{DynamicResource AnimatedBorderBrush}" Tag="False" 
+                            <Border x:Name="MainBorder" Opacity="0" BorderThickness="6" Margin="-6" CornerRadius="10" BorderBrush="{DynamicResource BottomPanelBorderBrush}" Tag="False" 
 							    Visibility="Collapsed" ></Border>
                             <Border x:Name="FlashFocus" Opacity="0" CornerRadius="0" Style="{DynamicResource AnimatedFlashFocus}" Tag="False" Visibility="Collapsed" />
                             <Border x:Name="FlashCover" Opacity="0" Style="{DynamicResource AnimatedFlashCover}" CornerRadius="5" Tag="False" Visibility="Collapsed" />
@@ -83,6 +83,7 @@
                             <Setter Property="Tag" Value="True" TargetName="FlashCover" />
                             <Setter Property="Tag" Value="True" TargetName="MainBorder" />
                             <Setter Property="Visibility" Value="Visible" TargetName="MainBorder" />
+                            <Setter Property="Opacity" Value="1" TargetName="MainBorder" />
                             <Setter Property="Visibility" Value="Visible" TargetName="FlashFocus" />
                             <Setter Property="Visibility" Value="Visible" TargetName="FlashCover" />
                             <Setter Property="Canvas.ZIndex" Value="90" />

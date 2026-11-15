@@ -27,16 +27,16 @@
 
     <Viewbox>
         <Grid Height="1080" Width="1920" Name="GridMain" Background="#E6000000">
-            <Border x:Name="PanelBorder" Margin="67" CornerRadius="14"
+            <Border x:Name="PanelBorder" Margin="0,67"
                     Background="{DynamicResource BottomPanelBackgroundBrush}"
-                    BorderBrush="{DynamicResource BottomPanelBorderBrush}" BorderThickness="2">
-                <Grid Margin="20,15,20,10">
+                    BorderBrush="{DynamicResource BottomPanelBorderBrush}" BorderThickness="0,2">
+                <Grid Margin="0,15,0,10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <ContentControl Grid.Row="0" Focusable="False" Content="{Binding}" Margin="5,5,0,10"
+                    <ContentControl x:Name="HeaderHost" Grid.Row="0" Focusable="False" Content="{Binding}" Margin="67,5,0,10"
                                     ContentTemplate="{DynamicResource MoreGamesHeaderTemplate}" />
 
                     <!-- Margin compensates the -50/+50 shift of the tile container style (ListGameItemStyle) -->

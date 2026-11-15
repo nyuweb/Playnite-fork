@@ -4,7 +4,8 @@ using Playnite.ViewModels;
 using Playnite.Windows;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.ComponentModel;
+using System.Linq;
 
 namespace Playnite.FullscreenApp.ViewModels
 {
@@ -16,7 +17,8 @@ namespace Playnite.FullscreenApp.ViewModels
         private readonly IWindowFactory window;
         public FullscreenAppViewModel MainModel { get; }
 
-        public ICollectionView Games => MainModel.GamesView.CollectionView;
+        // Games already shown in the horizontal list are not repeated here.
+        public List<GamesCollectionViewEntry> Games { get; }
         public string Title => MainModel.ActiveFilterPreset?.Name;
 
         private GamesCollectionViewEntry selectedGame;
@@ -70,7 +72,11 @@ namespace Playnite.FullscreenApp.ViewModels
         {
             this.window = window;
             MainModel = mainModel;
-            SelectedGame = mainModel.SelectedGame;
+            Games = mainModel.GamesView.CollectionView
+                .Cast<GamesCollectionViewEntry>()
+                .Skip(mainModel.AppSettings.Fullscreen.HorizontalLayoutMaxGames)
+                .ToList();
+            SelectedGame = Games.Contains(mainModel.SelectedGame) ? mainModel.SelectedGame : Games.FirstOrDefault();
         }
 
         public bool? OpenView()
