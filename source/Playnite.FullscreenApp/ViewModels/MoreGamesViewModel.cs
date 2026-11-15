@@ -3,6 +3,7 @@ using Playnite.SDK;
 using Playnite.ViewModels;
 using Playnite.Windows;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Playnite.FullscreenApp.ViewModels

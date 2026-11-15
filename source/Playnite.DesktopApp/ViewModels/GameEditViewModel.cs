@@ -823,6 +823,22 @@ namespace Playnite.DesktopApp.ViewModels
                     game.EnableSystemHdr = EditingGame.EnableSystemHdr;
                 }
 
+                if (UseResolutionChanges)
+                {
+                    game.ResolutionWidth = EditingGame.ResolutionWidth;
+                    game.ResolutionHeight = EditingGame.ResolutionHeight;
+                }
+
+                if (UseFrequencyChanges)
+                {
+                    game.Frequency = EditingGame.Frequency;
+                }
+
+                if (UseOutputDisplayChanges)
+                {
+                    game.OutputDisplay = EditingGame.OutputDisplay;
+                }
+
                 if (UseHiddenChanges)
                 {
                     game.Hidden = EditingGame.Hidden;

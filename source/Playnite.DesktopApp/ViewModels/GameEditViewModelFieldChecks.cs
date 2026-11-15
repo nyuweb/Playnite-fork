@@ -522,6 +522,54 @@ namespace Playnite.DesktopApp.ViewModels
             }
         }
 
+        private bool useResolutionChanges;
+        public bool UseResolutionChanges
+        {
+            get
+            {
+                return useResolutionChanges;
+            }
+
+            set
+            {
+                useResolutionChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+            }
+        }
+
+        private bool useFrequencyChanges;
+        public bool UseFrequencyChanges
+        {
+            get
+            {
+                return useFrequencyChanges;
+            }
+
+            set
+            {
+                useFrequencyChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+            }
+        }
+
+        private bool useOutputDisplayChanges;
+        public bool UseOutputDisplayChanges
+        {
+            get
+            {
+                return useOutputDisplayChanges;
+            }
+
+            set
+            {
+                useOutputDisplayChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+            }
+        }
+
         private bool useHdrChanges;
         public bool UseHdrChanges
         {
@@ -791,6 +839,9 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 return ShowCheckBoxes &&
                     (UseHdrChanges ||
+                    UseResolutionChanges ||
+                    UseFrequencyChanges ||
+                    UseOutputDisplayChanges ||
                     UseHiddenChanges ||
                     UseFavoriteChanges ||
                     UseLastActivityChanges ||
@@ -1229,6 +1280,40 @@ namespace Playnite.DesktopApp.ViewModels
                     else
                     {
                         UseHdrChanges = true;
+                    }
+                    break;
+                case nameof(Game.ResolutionWidth):
+                case nameof(Game.ResolutionHeight):
+                    OnPropertyChanged(nameof(EditingResolution));
+                    if (IsSingleGameEdit)
+                    {
+                        UseResolutionChanges =
+                            Game.ResolutionWidth != EditingGame.ResolutionWidth ||
+                            Game.ResolutionHeight != EditingGame.ResolutionHeight;
+                    }
+                    else
+                    {
+                        UseResolutionChanges = true;
+                    }
+                    break;
+                case nameof(Game.Frequency):
+                    if (IsSingleGameEdit)
+                    {
+                        UseFrequencyChanges = Game.Frequency != EditingGame.Frequency;
+                    }
+                    else
+                    {
+                        UseFrequencyChanges = true;
+                    }
+                    break;
+                case nameof(Game.OutputDisplay):
+                    if (IsSingleGameEdit)
+                    {
+                        UseOutputDisplayChanges = Game.OutputDisplay != EditingGame.OutputDisplay;
+                    }
+                    else
+                    {
+                        UseOutputDisplayChanges = true;
                     }
                     break;
                 case nameof(Game.PreScript):

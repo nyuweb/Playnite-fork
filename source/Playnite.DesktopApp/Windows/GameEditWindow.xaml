@@ -473,6 +473,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- Last Played -->
@@ -600,6 +603,29 @@
                              Grid.ColumnSpan="4" TextWrapping="Wrap"
                              AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
                              VerticalAlignment="Stretch" />
+
+                    <!-- Resolution -->
+                    <TextBlock Grid.Column="1" Grid.Row="13" Text="{DynamicResource LOCGameResolutionTitle}" />
+                    <CheckBox Grid.Column="0" Grid.Row="13" Style="{StaticResource SaveChangesCheck}"
+                              IsChecked="{Binding UseResolutionChanges}"/>
+                    <ComboBox Grid.Column="2" Grid.Row="13" MinWidth="150" HorizontalAlignment="Left"
+                              ItemsSource="{Binding ResolutionChoices}" DisplayMemberPath="Label"
+                              SelectedItem="{Binding EditingResolution}" />
+
+                    <!-- Frequency -->
+                    <TextBlock Grid.Column="1" Grid.Row="14" Text="{DynamicResource LOCGameFrequencyTitle}" />
+                    <CheckBox Grid.Column="0" Grid.Row="14" Style="{StaticResource SaveChangesCheck}"
+                              IsChecked="{Binding UseFrequencyChanges}"/>
+                    <ComboBox Grid.Column="2" Grid.Row="14" MinWidth="150" HorizontalAlignment="Left"
+                              ItemsSource="{Binding FrequencyChoices}" DisplayMemberPath="Label"
+                              SelectedValuePath="Value" SelectedValue="{Binding EditingGame.Frequency}" />
+
+                    <!-- Output display -->
+                    <TextBlock Grid.Column="1" Grid.Row="15" Text="{DynamicResource LOCGameOutputDisplayTitle}" />
+                    <CheckBox Grid.Column="0" Grid.Row="15" Style="{StaticResource SaveChangesCheck}"
+                              IsChecked="{Binding UseOutputDisplayChanges}"/>
+                    <TextBox Grid.Column="2" Grid.Row="15"
+                             Text="{Binding EditingGame.OutputDisplay, UpdateSourceTrigger=PropertyChanged}" />
 
                     <!-- GameId -->
                     <TextBlock Grid.Column="4" Grid.Row="0" Text="{DynamicResource LOCGameId}"

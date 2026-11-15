@@ -179,7 +179,15 @@ namespace Playnite.SDK.Models
         ///
         RecentActivity = 91,
         ///
-        EnableSystemHdr = 92
+        EnableSystemHdr = 92,
+        ///
+        ResolutionWidth = 93,
+        ///
+        ResolutionHeight = 94,
+        ///
+        Frequency = 95,
+        ///
+        OutputDisplay = 96
     }
 
     /// <summary>
@@ -259,6 +267,78 @@ namespace Playnite.SDK.Models
                 genreIds = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Genres));
+            }
+        }
+
+        private int resolutionWidth;
+        /// <summary>
+        /// Gets or sets display resolution width used to play the game, 0 if not set.
+        /// </summary>
+        public int ResolutionWidth
+        {
+            get
+            {
+                return resolutionWidth;
+            }
+
+            set
+            {
+                resolutionWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int resolutionHeight;
+        /// <summary>
+        /// Gets or sets display resolution height used to play the game, 0 if not set.
+        /// </summary>
+        public int ResolutionHeight
+        {
+            get
+            {
+                return resolutionHeight;
+            }
+
+            set
+            {
+                resolutionHeight = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int frequency;
+        /// <summary>
+        /// Gets or sets display refresh rate in Hz used to play the game, 0 if not set.
+        /// </summary>
+        public int Frequency
+        {
+            get
+            {
+                return frequency;
+            }
+
+            set
+            {
+                frequency = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string outputDisplay;
+        /// <summary>
+        /// Gets or sets display output used to play the game.
+        /// </summary>
+        public string OutputDisplay
+        {
+            get
+            {
+                return outputDisplay;
+            }
+
+            set
+            {
+                outputDisplay = value;
+                OnPropertyChanged();
             }
         }
 
@@ -1698,6 +1778,10 @@ namespace Playnite.SDK.Models
                 Description = Description,
                 Notes = Notes,
                 EnableSystemHdr = EnableSystemHdr,
+                ResolutionWidth = ResolutionWidth,
+                ResolutionHeight = ResolutionHeight,
+                Frequency = Frequency,
+                OutputDisplay = OutputDisplay,
                 Hidden = Hidden,
                 Favorite = Favorite,
                 InstallDirectory = InstallDirectory,
@@ -1776,6 +1860,26 @@ namespace Playnite.SDK.Models
                 if (EnableSystemHdr != tro.EnableSystemHdr)
                 {
                     tro.EnableSystemHdr = EnableSystemHdr;
+                }
+
+                if (ResolutionWidth != tro.ResolutionWidth)
+                {
+                    tro.ResolutionWidth = ResolutionWidth;
+                }
+
+                if (ResolutionHeight != tro.ResolutionHeight)
+                {
+                    tro.ResolutionHeight = ResolutionHeight;
+                }
+
+                if (Frequency != tro.Frequency)
+                {
+                    tro.Frequency = Frequency;
+                }
+
+                if (!string.Equals(OutputDisplay, tro.OutputDisplay, StringComparison.Ordinal))
+                {
+                    tro.OutputDisplay = OutputDisplay;
                 }
 
                 if (Hidden != tro.Hidden)
@@ -2056,6 +2160,26 @@ namespace Playnite.SDK.Models
             if (EnableSystemHdr != otherGame.enableSystemHdr)
             {
                 changes.Add(GameField.EnableSystemHdr);
+            }
+
+            if (ResolutionWidth != otherGame.ResolutionWidth)
+            {
+                changes.Add(GameField.ResolutionWidth);
+            }
+
+            if (ResolutionHeight != otherGame.ResolutionHeight)
+            {
+                changes.Add(GameField.ResolutionHeight);
+            }
+
+            if (Frequency != otherGame.Frequency)
+            {
+                changes.Add(GameField.Frequency);
+            }
+
+            if (!string.Equals(OutputDisplay, otherGame.OutputDisplay, StringComparison.Ordinal))
+            {
+                changes.Add(GameField.OutputDisplay);
             }
 
             if (Hidden != otherGame.Hidden)

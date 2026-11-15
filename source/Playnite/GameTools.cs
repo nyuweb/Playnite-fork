@@ -167,6 +167,26 @@ namespace Playnite
                 dummyGame.CommunityScore = firstCommunityScore;
             }
 
+            var firstResolutionWidth = firstGame.ResolutionWidth;
+            var firstResolutionHeight = firstGame.ResolutionHeight;
+            if (games.All(a => a.ResolutionWidth == firstResolutionWidth && a.ResolutionHeight == firstResolutionHeight) == true)
+            {
+                dummyGame.ResolutionWidth = firstResolutionWidth;
+                dummyGame.ResolutionHeight = firstResolutionHeight;
+            }
+
+            var firstFrequency = firstGame.Frequency;
+            if (games.All(a => a.Frequency == firstFrequency) == true)
+            {
+                dummyGame.Frequency = firstFrequency;
+            }
+
+            var firstOutputDisplay = firstGame.OutputDisplay;
+            if (games.All(a => a.OutputDisplay == firstOutputDisplay) == true)
+            {
+                dummyGame.OutputDisplay = firstOutputDisplay;
+            }
+
             var firstHidden = firstGame.Hidden;
             if (games.All(a => a.Hidden == firstHidden) == true)
             {
