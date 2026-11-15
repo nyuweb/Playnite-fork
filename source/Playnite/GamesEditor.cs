@@ -1421,6 +1421,7 @@ namespace Playnite
         private void Controllers_Stopped(object sender, GameStoppedEventArgs args)
         {
             var game = args.Source.Game;
+            var stopTimer = System.Diagnostics.Stopwatch.StartNew();
             logger.Info($"Game {game.Name} stopped after {args.SessionLength} seconds.");
 
             // I have no idea under what conditions this could happen, but there are couple crash reports with this.
@@ -1459,8 +1460,11 @@ namespace Playnite
                 // This delay apparently fixes issues with Playnite not restoring properly after game exits.
                 // The window will restore, but application will not regain active state.
                 // This was mainly reported to happen with some emulators, like RPCS3, no idea why.
+                logger.Info($"[restore timing] stop handling took {stopTimer.ElapsedMilliseconds} ms, waiting before restore.");
                 Thread.Sleep(750);
+                logger.Info($"[restore timing] restoring window, {stopTimer.ElapsedMilliseconds} ms after stop event.");
                 Application.Restore();
+                logger.Info($"[restore timing] restore call returned, {stopTimer.ElapsedMilliseconds} ms after stop event.");
             }
 
             if (AppSettings.DiscordPresenceEnabled)

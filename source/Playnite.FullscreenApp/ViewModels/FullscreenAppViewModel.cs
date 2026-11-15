@@ -449,10 +449,12 @@ namespace Playnite.FullscreenApp.ViewModels
 
         private void Controllers_Stopped(object sender, GameStoppedEventArgs e)
         {
+            Logger.Info("[restore timing] Fullscreen handling game stopped, status view visible: " + GameStatusVisible);
             if (GameStatusVisible)
             {
                 GameStatusVisible = false;
                 GameListFocused = true;
+                Logger.Info("[restore timing] Game list focus requested.");
             }
 
             GameStatusView = null;
@@ -462,6 +464,7 @@ namespace Playnite.FullscreenApp.ViewModels
 
         private void Controllers_Starting(object sender, OnGameStartingEventArgs e)
         {
+            Logger.Info($"[restore timing] Game starting: {e.Game.Name}.");
             GameStarting?.Invoke(this, EventArgs.Empty);
             GameListFocused = false;
 
@@ -867,6 +870,7 @@ namespace Playnite.FullscreenApp.ViewModels
             App.UpdateScreenInformation(Window.Window);
             Window.Window.LocationChanged += Window_LocationChanged;
             Window.Window.StateChanged += Window_StateChanged;
+            Window.Window.Activated += (_, __) => Logger.Info("[restore timing] Main window activated.");
             InitializeView();
         }
 
@@ -1095,7 +1099,10 @@ namespace Playnite.FullscreenApp.ViewModels
 
         public void RestoreWindow()
         {
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            Logger.Info("[restore timing] RestoreWindow started.");
             Window.RestoreWindow();
+            Logger.Info($"[restore timing] RestoreWindow finished in {timer.ElapsedMilliseconds} ms.");
         }
 
         public void MinimizeWindow()
@@ -1121,6 +1128,7 @@ namespace Playnite.FullscreenApp.ViewModels
         // There's really no good way to handle this via some MVVM binding without breaking theme changes to GameStatus view.
         private void Window_StateChanged(object sender, EventArgs e)
         {
+            Logger.Info($"[restore timing] Main window state changed to {Window.Window.WindowState}.");
             if (GameStatusVisible && Window.Window.WindowState != WindowState.Minimized)
             {
                 var gameStatusScreen = ElementTreeHelper.FindVisualChildren<GameStatus>(Window.Window).FirstOrDefault();

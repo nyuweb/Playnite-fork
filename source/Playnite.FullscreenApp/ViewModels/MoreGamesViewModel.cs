@@ -42,6 +42,7 @@ namespace Playnite.FullscreenApp.ViewModels
                 var game = SelectedGame;
                 pendingAction = () =>
                 {
+                    LogManager.GetLogger().Info($"[restore timing] Launching {game.Name} from the More grid.");
                     MainModel.SelectedGame = game;
                     MainModel.ActivateSelectedCommand.Execute(a);
                 };
