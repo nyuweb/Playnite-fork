@@ -164,14 +164,8 @@ namespace Playnite.DesktopApp.ViewModels
 
         private bool CanDownloadData()
         {
-            return CanDownloadData(Settings.AgeRating)
-                || CanDownloadData(Settings.BackgroundImage)
-                || CanDownloadData(Settings.CommunityScore)
+            return CanDownloadData(Settings.BackgroundImage)
                 || CanDownloadData(Settings.CoverImage)
-                || CanDownloadData(Settings.CriticScore)
-                || CanDownloadData(Settings.Description)
-                || CanDownloadData(Settings.Developer)
-                || CanDownloadData(Settings.Feature)
                 || CanDownloadData(Settings.Genre)
                 || CanDownloadData(Settings.Icon)
                 || CanDownloadData(Settings.InstallSize)
@@ -179,10 +173,7 @@ namespace Playnite.DesktopApp.ViewModels
                 || CanDownloadData(Settings.Name)
                 || CanDownloadData(Settings.Platform)
                 || CanDownloadData(Settings.Publisher)
-                || CanDownloadData(Settings.Region)
-                || CanDownloadData(Settings.ReleaseDate)
-                || CanDownloadData(Settings.Series)
-                || CanDownloadData(Settings.Tag);
+                || CanDownloadData(Settings.ReleaseDate);
         }
 
         private static bool CanDownloadData(MetadataFieldSettings fieldSettings)

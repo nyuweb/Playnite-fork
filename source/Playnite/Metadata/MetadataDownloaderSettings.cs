@@ -303,6 +303,20 @@ namespace Playnite.Metadata
         {
         }
 
+        /// <summary>
+        /// Fields hidden from the UI in this fork, these are never downloaded.
+        /// </summary>
+        public void DisableHiddenFields()
+        {
+            foreach (var field in new[] { Developer, Tag, Feature, Description, AgeRating, Region, Series, CriticScore, CommunityScore })
+            {
+                if (field != null)
+                {
+                    field.Import = false;
+                }
+            }
+        }
+
         public static MetadataDownloaderSettings GetDefaultSettings()
         {
             var igdbPluginId = BuiltinExtensions.GetIdFromExtension(BuiltinExtension.IgdbMetadata);

@@ -146,20 +146,8 @@ namespace Playnite.DesktopApp.Controls.Views
             SetLabelTag(nameof(FilterSettings.ReleaseYear), LOC.GameReleaseYearTitle);
             SetFilterStringSelectionBoxFilter(nameof(DatabaseFilter.ReleaseYears), nameof(FilterSettings.ReleaseYear));
 
-            SetLabelTag(nameof(FilterSettings.Developer), LOC.DeveloperLabel);
-            SetFilterSelectionBoxFilter(nameof(DatabaseFilter.Developers), nameof(FilterSettings.Developer));
-
             SetLabelTag(nameof(FilterSettings.Publisher), LOC.PublisherLabel);
             SetFilterSelectionBoxFilter(nameof(DatabaseFilter.Publishers), nameof(FilterSettings.Publisher));
-
-            SetLabelTag(nameof(FilterSettings.Category), LOC.CategoryLabel);
-            SetFilterSelectionBoxFilter(nameof(DatabaseFilter.Categories), nameof(FilterSettings.Category));
-
-            SetLabelTag(nameof(FilterSettings.Tag), LOC.TagLabel);
-            SetFilterSelectionBoxFilter(nameof(DatabaseFilter.Tags), nameof(FilterSettings.Tag));
-
-            SetLabelTag(nameof(FilterSettings.Feature), LOC.FeatureLabel);
-            SetFilterSelectionBoxFilter(nameof(DatabaseFilter.Features), nameof(FilterSettings.Feature));
 
             SetLabelTag(nameof(FilterSettings.PlayTime), LOC.TimePlayed);
             SetFilterEnumSelectionBoxFilter(nameof(FilterSettings.PlayTime), typeof(PlaytimeCategory));
@@ -170,29 +158,8 @@ namespace Playnite.DesktopApp.Controls.Views
             SetLabelTag(nameof(FilterSettings.CompletionStatuses), LOC.CompletionStatus);
             SetFilterSelectionBoxFilter(nameof(DatabaseFilter.CompletionStatuses), nameof(FilterSettings.CompletionStatuses));
 
-            SetLabelTag(nameof(FilterSettings.Series), LOC.SeriesLabel);
-            SetFilterSelectionBoxFilter(nameof(DatabaseFilter.Series), nameof(FilterSettings.Series));
-
-            SetLabelTag(nameof(FilterSettings.Region), LOC.RegionLabel);
-            SetFilterSelectionBoxFilter(nameof(DatabaseFilter.Regions), nameof(FilterSettings.Region));
-
-            SetLabelTag(nameof(FilterSettings.Source), LOC.SourceLabel);
-            SetFilterSelectionBoxFilter(nameof(DatabaseFilter.Sources), nameof(FilterSettings.Source));
-
-            SetLabelTag(nameof(FilterSettings.AgeRating), LOC.AgeRatingLabel);
-            SetFilterSelectionBoxFilter(nameof(DatabaseFilter.AgeRatings), nameof(FilterSettings.AgeRating));
-
             SetLabelTag(nameof(FilterSettings.Version), LOC.VersionLabel, new StringNullOrEmptyToBoolConverter(), nameof(FilterSettings.Version));
             SetFilterSearchBoxFilter(nameof(FilterSettings.Version));
-
-            SetLabelTag(nameof(FilterSettings.UserScore), LOC.UserScore);
-            SetFilterEnumSelectionBoxFilter(nameof(FilterSettings.UserScore), typeof(ScoreGroup));
-
-            SetLabelTag(nameof(FilterSettings.CommunityScore), LOC.CommunityScore);
-            SetFilterEnumSelectionBoxFilter(nameof(FilterSettings.CommunityScore), typeof(ScoreGroup));
-
-            SetLabelTag(nameof(FilterSettings.CriticScore), LOC.CriticScore);
-            SetFilterEnumSelectionBoxFilter(nameof(FilterSettings.CriticScore), typeof(ScoreGroup));
 
             SetLabelTag(nameof(FilterSettings.LastActivity), LOC.GameLastActivityTitle);
             SetFilterEnumSelectionBoxFilter(nameof(FilterSettings.LastActivity), typeof(PastTimeSegment));

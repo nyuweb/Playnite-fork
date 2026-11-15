@@ -128,9 +128,9 @@
                             Template="{StaticResource SourceSelector}" />
 
             <!--Developers-->
-            <TextBlock Text="{DynamicResource LOCGameDevelopersTitle}"  />
-            <CheckBox IsChecked="{Binding Settings.Developer.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding DevelopersSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCGameDevelopersTitle}"  />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.Developer.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding DevelopersSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
 
             <!--Publishers-->
@@ -140,21 +140,21 @@
                             Template="{StaticResource SourceSelector}" />
 
             <!--Features-->
-            <TextBlock Text="{DynamicResource LOCFeaturesLabel}"  />
-            <CheckBox IsChecked="{Binding Settings.Feature.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding FeaturesSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCFeaturesLabel}"  />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.Feature.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding FeaturesSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
 
             <!--Tags-->
-            <TextBlock Text="{DynamicResource LOCTagsLabel}" />
-            <CheckBox IsChecked="{Binding Settings.Tag.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding TagsSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCTagsLabel}" />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.Tag.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding TagsSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
 
             <!--Description-->
-            <TextBlock Text="{DynamicResource LOCGameDescriptionTitle}" />
-            <CheckBox IsChecked="{Binding Settings.Description.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding DescriptionSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCGameDescriptionTitle}" />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.Description.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding DescriptionSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
 
             <!--Links-->
@@ -164,32 +164,32 @@
                             Template="{StaticResource SourceSelector}" />
 
             <!--CriticScore-->
-            <TextBlock Text="{DynamicResource LOCCriticScore}"  />
-            <CheckBox IsChecked="{Binding Settings.CriticScore.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding CriticScoreSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCCriticScore}"  />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.CriticScore.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding CriticScoreSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
 
             <!--CommunityScore-->
-            <TextBlock Text="{DynamicResource LOCCommunityScore}" />
-            <CheckBox IsChecked="{Binding Settings.CommunityScore.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding CommunityScoreSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCCommunityScore}" />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.CommunityScore.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding CommunityScoreSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
 
             <!--Age rating-->
-            <TextBlock Text="{DynamicResource LOCAgeRatingLabel}"  />
-            <CheckBox IsChecked="{Binding Settings.AgeRating.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding AgeRatingSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCAgeRatingLabel}"  />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.AgeRating.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding AgeRatingSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
             
             <!--Series-->
-            <TextBlock Text="{DynamicResource LOCSeriesLabel}" />
-            <CheckBox IsChecked="{Binding Settings.Series.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding SeriesSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCSeriesLabel}" />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.Series.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding SeriesSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
             <!--Region-->
-            <TextBlock Text="{DynamicResource LOCRegionLabel}"  />
-            <CheckBox IsChecked="{Binding Settings.Region.Import}" Style="{StaticResource CheckImportStyle}"/>
-            <ContentControl DataContext="{Binding RegionSettings}" IsTabStop="False"
+            <TextBlock Visibility="Collapsed" Text="{DynamicResource LOCRegionLabel}"  />
+            <CheckBox Visibility="Collapsed" IsChecked="{Binding Settings.Region.Import}" Style="{StaticResource CheckImportStyle}"/>
+            <ContentControl Visibility="Collapsed" DataContext="{Binding RegionSettings}" IsTabStop="False"
                             Template="{StaticResource SourceSelector}" />
 
             <!--Platform-->

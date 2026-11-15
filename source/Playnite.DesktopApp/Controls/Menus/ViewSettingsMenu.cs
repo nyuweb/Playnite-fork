@@ -43,7 +43,13 @@ namespace Playnite.DesktopApp.Controls
         {
             MenuHelpers.PopulateEnumOptions<SortOrderDirection>(itemsRoot, nameof(settings.ViewSettings.SortingOrderDirection), settings.ViewSettings);
             itemsRoot.Add(new Separator());
-            MenuHelpers.PopulateEnumOptions<SortOrder>(itemsRoot, nameof(settings.ViewSettings.SortingOrder), settings.ViewSettings, true);
+            MenuHelpers.PopulateEnumOptions<SortOrder>(itemsRoot, nameof(settings.ViewSettings.SortingOrder), settings.ViewSettings, true,
+                new List<SortOrder>
+                {
+                    SortOrder.Categories, SortOrder.Developers, SortOrder.Tags, SortOrder.Series, SortOrder.AgeRatings,
+                    SortOrder.Regions, SortOrder.Source, SortOrder.UserScore, SortOrder.CriticScore, SortOrder.CommunityScore,
+                    SortOrder.Features
+                });
         }
 
         public static void GenerateGroupMenu(ItemCollection itemsRoot, PlayniteSettings settings)
@@ -53,7 +59,12 @@ namespace Playnite.DesktopApp.Controls
             MenuHelpers.SetEnumBinding(dontGroupItem, nameof(settings.ViewSettings.GroupingOrder), settings.ViewSettings, GroupableField.None);
             itemsRoot.Add(new Separator());
             MenuHelpers.PopulateEnumOptions<GroupableField>(itemsRoot, nameof(settings.ViewSettings.GroupingOrder), settings.ViewSettings, true,
-                new List<GroupableField> { GroupableField.None });
+                new List<GroupableField>
+                {
+                    GroupableField.None, GroupableField.Category, GroupableField.Developer, GroupableField.Tag, GroupableField.Series,
+                    GroupableField.AgeRating, GroupableField.Region, GroupableField.Source, GroupableField.UserScore,
+                    GroupableField.CriticScore, GroupableField.CommunityScore, GroupableField.Feature
+                });
         }
 
         public void InitializeItems()

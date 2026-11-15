@@ -315,6 +315,7 @@ namespace Playnite.Metadata
             Action<Game, int, int> progressCallback,
             CancellationToken cancelToken)
         {
+            settings.DisableHiddenFields();
             return Task.Run(() =>
             {
                 if (games == null || games.Count == 0)

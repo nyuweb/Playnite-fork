@@ -215,18 +215,9 @@ namespace Playnite.FullscreenApp.ViewModels
                 new List<SelectableNamedObject<GameField>>
                 {
                     new SelectableNamedObject<GameField>(GameField.CompletionStatus, ResourceProvider.GetString(LOC.CompletionStatus)),
-                    new SelectableNamedObject<GameField>(GameField.UserScore, ResourceProvider.GetString(LOC.UserScore)),
-                    new SelectableNamedObject<GameField>(GameField.Categories,ResourceProvider.GetString(LOC.CategoryLabel)),
-                    new SelectableNamedObject<GameField>(GameField.Tags, ResourceProvider.GetString(LOC.TagLabel)),
-                    new SelectableNamedObject<GameField>(GameField.Features, ResourceProvider.GetString(LOC.FeatureLabel)),
                     new SelectableNamedObject<GameField>(GameField.Platforms, ResourceProvider.GetString(LOC.PlatformTitle)),
                     new SelectableNamedObject<GameField>(GameField.Genres, ResourceProvider.GetString(LOC.GenreLabel)),
-                    new SelectableNamedObject<GameField>(GameField.Developers, ResourceProvider.GetString(LOC.DeveloperLabel)),
                     new SelectableNamedObject<GameField>(GameField.Publishers, ResourceProvider.GetString(LOC.PublisherLabel)),
-                    new SelectableNamedObject<GameField>(GameField.Series, ResourceProvider.GetString(LOC.SeriesLabel)),
-                    new SelectableNamedObject<GameField>(GameField.AgeRatings, ResourceProvider.GetString(LOC.AgeRatingLabel)),
-                    new SelectableNamedObject<GameField>(GameField.Regions, ResourceProvider.GetString(LOC.RegionLabel)),
-                    new SelectableNamedObject<GameField>(GameField.Source, ResourceProvider.GetString(LOC.SourceLabel)),
                 },
                 out var selectedField);
             if (selected)

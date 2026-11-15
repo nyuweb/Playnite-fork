@@ -580,23 +580,15 @@ namespace Playnite.DesktopApp.ViewModels
                             Name = provider.GetName(fieldArgs),
                             Genres = provider.GetGenres(fieldArgs)?.Where(a => a != null).ToHashSet(),
                             ReleaseDate = provider.GetReleaseDate(fieldArgs),
-                            Developers = provider.GetDevelopers(fieldArgs)?.Where(a => a != null).ToHashSet(),
                             Publishers = provider.GetPublishers(fieldArgs)?.Where(a => a != null).ToHashSet(),
-                            Tags = provider.GetTags(fieldArgs)?.Where(a => a != null).ToHashSet(),
-                            Features = provider.GetFeatures(fieldArgs)?.Where(a => a != null).ToHashSet(),
-                            Description = provider.GetDescription(fieldArgs),
                             Links = provider.GetLinks(fieldArgs)?.Where(a => a != null).ToList(),
-                            CriticScore = provider.GetCriticScore(fieldArgs),
-                            CommunityScore = provider.GetCommunityScore(fieldArgs),
-                            AgeRatings = provider.GetAgeRatings(fieldArgs)?.Where(a => a != null).ToHashSet(),
-                            Series = provider.GetSeries(fieldArgs)?.Where(a => a != null).ToHashSet(),
-                            Regions = provider.GetRegions(fieldArgs)?.Where(a => a != null).ToHashSet(),
                             Platforms = provider.GetPlatforms(fieldArgs)?.Where(a => a != null).ToHashSet(),
                             Icon = provider.GetIcon(fieldArgs),
                             CoverImage = provider.GetCoverImage(fieldArgs),
                             BackgroundImage = provider.GetBackgroundImage(fieldArgs),
                             InstallSize = provider.GetInstallSize(fieldArgs)
                         };
+                        // Developers, tags, features, description, scores, age ratings, series and regions are hidden in this fork.
 
                         Application.Current.Dispatcher.Invoke(() => PreviewGameData(ConvertGameInfo(metadata)));
                     }

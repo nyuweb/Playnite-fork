@@ -22,6 +22,21 @@ namespace Playnite.FullscreenApp.Controls.Views
     [TemplatePart(Name = "PART_ItemsHost", Type = typeof(ItemsControl))]
     public class Filters : Control
     {
+        private static readonly List<SortOrder> hiddenSortOrders = new List<SortOrder>
+        {
+            SortOrder.Categories,
+            SortOrder.Developers,
+            SortOrder.Tags,
+            SortOrder.Series,
+            SortOrder.AgeRatings,
+            SortOrder.Regions,
+            SortOrder.Source,
+            SortOrder.UserScore,
+            SortOrder.CriticScore,
+            SortOrder.CommunityScore,
+            SortOrder.Features
+        };
+
         private FullscreenAppViewModel mainModel;
         private ItemsControl PanelItemsHost;
 
@@ -86,7 +101,6 @@ namespace Playnite.FullscreenApp.Controls.Views
             AssignBoolFilter(nameof(FilterSettings.UseAndFilteringStyle), LOC.UseFilterStyleAndTitle);
             AssignFilter(GameField.PluginId, nameof(FilterSettings.Library), LOC.Library);
             AssignFilter(GameField.Platforms, nameof(FilterSettings.Platform), LOC.PlatformTitle);
-            AssignFilter(GameField.Categories, nameof(FilterSettings.Category), LOC.CategoryLabel);
 
             var ButtonAdditional = new ButtonEx();
             ButtonAdditional.Command = mainModel.OpenAdditionalFiltersCommand;
@@ -106,7 +120,7 @@ namespace Playnite.FullscreenApp.Controls.Views
 
             var SelectSortBy = new ComboBoxEx();
             SelectSortBy.SetResourceReference(ComboBoxEx.StyleProperty, "FilterPanelComboBoxEx");
-            SelectSortBy.ItemsSource = ItemsSource.GetEnumSources(typeof(SortOrder));
+            SelectSortBy.ItemsSource = ItemsSource.GetEnumSources(typeof(SortOrder)).Where(a => !hiddenSortOrders.Contains((SortOrder)a.Value));
             SelectSortBy.DisplayMemberPath = nameof(ItemsSource.EnumItem.Name);
             SelectSortBy.SelectedValuePath = nameof(ItemsSource.EnumItem.Value);
             BindingTools.SetBinding(
