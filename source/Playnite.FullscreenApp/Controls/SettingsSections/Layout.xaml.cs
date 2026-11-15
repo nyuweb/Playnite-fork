@@ -51,6 +51,18 @@ namespace Playnite.FullscreenApp.Controls.SettingsSections
                     BindingMode.OneWay,
                     UpdateSourceTrigger.PropertyChanged);
 
+            SliderMoreColumns.Minimum = 1;
+            SliderMoreColumns.Maximum = 50;
+            SliderMoreColumns.TickFrequency = 1;
+            SliderMoreColumns.IsSnapToTickEnabled = true;
+            BindingTools.SetBinding(
+                SliderMoreColumns,
+                Slider.ValueProperty,
+                mainModel.AppSettings.Fullscreen,
+                nameof(FullscreenSettings.MoreGamesColumns),
+                BindingMode.TwoWay,
+                UpdateSourceTrigger.PropertyChanged);
+
             SliderMaxGames.Minimum = 5;
             SliderMaxGames.Maximum = 20;
             SliderMaxGames.TickFrequency = 1;

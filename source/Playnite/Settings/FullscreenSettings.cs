@@ -186,6 +186,21 @@ namespace Playnite
             }
         }
 
+        private int moreGamesColumns = 8;
+        public int MoreGamesColumns
+        {
+            get
+            {
+                return moreGamesColumns;
+            }
+
+            set
+            {
+                moreGamesColumns = Math.Max(1, Math.Min(50, value));
+                OnPropertyChanged();
+            }
+        }
+
         private int bottomPanelOpacity = 100;
         public int BottomPanelOpacity
         {

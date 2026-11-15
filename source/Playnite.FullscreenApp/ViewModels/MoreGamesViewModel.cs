@@ -36,7 +36,9 @@ namespace Playnite.FullscreenApp.ViewModels
         {
             if (SelectedGame != null)
             {
-                MainModel.SelectedGame = SelectedGame;
+                var game = SelectedGame;
+                Close();
+                MainModel.SelectedGame = game;
                 MainModel.ActivateSelectedCommand.Execute(a);
             }
         });
@@ -59,7 +61,21 @@ namespace Playnite.FullscreenApp.ViewModels
 
         public bool? OpenView()
         {
-            return window.CreateAndOpenDialog(this);
+            MainModel.GameStarting += MainModel_GameStarting;
+            try
+            {
+                return window.CreateAndOpenDialog(this);
+            }
+            finally
+            {
+                MainModel.GameStarting -= MainModel_GameStarting;
+            }
+        }
+
+        // The grid is a modal window, it would keep input after the game exits if it stayed open.
+        private void MainModel_GameStarting(object sender, EventArgs e)
+        {
+            System.Windows.Application.Current?.Dispatcher.BeginInvoke(new Action(Close));
         }
 
         public void Close()

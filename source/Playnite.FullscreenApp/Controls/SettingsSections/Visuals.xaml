@@ -19,7 +19,7 @@
                        Style="{DynamicResource SettingsSectionText}"/>
             <TextBlock Text="*" Margin="5,0,0,0"
                        Style="{DynamicResource SettingsSectionText}" />
-            <pctrls:ComboBoxEx x:Name="SelectTheme" pbeh:FocusBahaviors.OnVisibilityFocus="True" 
+            <pctrls:ComboBoxEx x:Name="SelectTheme" 
                                DockPanel.Dock="Right" />
         </DockPanel>
 
@@ -43,7 +43,7 @@
         <DockPanel LastChildFill="False">
             <TextBlock Text="{DynamicResource LOCSettingsBottomPanelOpacity}"
                        Style="{DynamicResource SettingsSectionText}"/>
-            <pctrls:SliderEx x:Name="SliderBottomPanelOpacity" DockPanel.Dock="Right" />
+            <pctrls:SliderEx x:Name="SliderBottomPanelOpacity" DockPanel.Dock="Right" pbeh:FocusBahaviors.OnVisibilityFocus="True" />
             <TextBlock Text="{Binding Value, ElementName=SliderBottomPanelOpacity}" DockPanel.Dock="Right"
                        Style="{DynamicResource SettingsSectionText}"
                        TextAlignment="Right" Margin="0,0,10,0"/>

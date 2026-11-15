@@ -458,8 +458,11 @@ namespace Playnite.FullscreenApp.ViewModels
             GameStatusView = null;
         }
 
+        public event EventHandler GameStarting;
+
         private void Controllers_Starting(object sender, OnGameStartingEventArgs e)
         {
+            GameStarting?.Invoke(this, EventArgs.Empty);
             GameListFocused = false;
 
             if (SelectedGame?.Game.Id == e.Game.Id)
