@@ -11,7 +11,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBoxEx">
 
-					<Grid x:Name="GridBox" Margin="0,45,0,0" UseLayoutRounding="True" > 
+					<Grid x:Name="GridBox" Margin="0,45,0,4" UseLayoutRounding="True" > 
 
                             <Grid.Style>
                                 <Style>
@@ -38,10 +38,10 @@
  						<!--<Border x:Name="MainBorder" Margin="3,3,3,5" BorderThickness="6,6,6,0" Opacity="0" CornerRadius="14,14,0,0" Style="{DynamicResource AnimatedBorderBrush}" Tag="False" Visibility="Collapsed" >
 							</Border>-->
 
-						<Border x:Name="NormalBorder" Margin="1" BorderThickness="3,3,3,0" CornerRadius="14,14,0,0" Background="{DynamicResource ButtonBackgroundBrush}" Tag="False" Visibility="Visible">
+						<Border x:Name="NormalBorder" Margin="1" BorderThickness="3,3,3,0" CornerRadius="14,14,0,0" Background="Transparent" Tag="False" Visibility="Visible">
 							</Border>
 
-						<Border x:Name="FlashMenuBorder" Margin="8,8,8,5" CornerRadius="10,10,0,0" Background="{DynamicResource ButtonBackgroundBrush}" Tag="False" Visibility="Collapsed">
+						<Border x:Name="FlashMenuBorder" Margin="8,8,8,5" CornerRadius="14,14,0,0" Background="Transparent" BorderThickness="0" Tag="False" Visibility="Collapsed">
 							</Border>
 
 							<Image x:Name="FilterIcon" RenderOptions.BitmapScalingMode="Fant" RenderTransformOrigin="0.5,0.5" Margin="17,23,17,17"
@@ -80,18 +80,22 @@
 							<!--<Setter Property="Visibility" Value="Visible" TargetName="MainBorder" />-->
 							<Setter Property="Visibility" Value="Collapsed" TargetName="NormalBorder" />
 							<Setter Property="Visibility" Value="Visible" TargetName="FlashMenuBorder" />	
+							<Setter Property="Background" Value="#33FFFFFF" TargetName="FlashMenuBorder" />
 							<Setter Property="Opacity" Value="0.8" TargetName="TextContent" />	
 							
                         </Trigger>
                         <Trigger Property="IsFocused" Value="False">
-							<Setter Property="Background" Value="{DynamicResource FilterBackgroundBrush}" TargetName="FlashMenuBorder" />
+							<Setter Property="Background" Value="Transparent" TargetName="FlashMenuBorder" />
 							<Setter Property="Visibility" Value="Visible" TargetName="FlashMenuBorder" />	
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
 							<Setter Property="Opacity" Value="1" TargetName="GridBox" />
 							<Setter Property="Visibility" Value="Visible" TargetName="FlashMenuBorder" />
-							<Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}" TargetName="FlashMenuBorder" />
+							<Setter Property="Background" Value="{DynamicResource BottomPanelBackgroundBrush}" TargetName="FlashMenuBorder" />
+							<Setter Property="BorderBrush" Value="{DynamicResource BottomPanelBorderBrush}" TargetName="FlashMenuBorder" />
+							<Setter Property="BorderThickness" Value="2,2,2,0" TargetName="FlashMenuBorder" />
 							<Setter Property="Margin" Value="8,8,8,-14" TargetName="FlashMenuBorder" />
+							<Setter Property="Foreground" Value="{DynamicResource BottomPanelForegroundBrush}" TargetName="TextContent" />
 							<!--<Setter Property="Margin" Value="3,3,3,2" TargetName="MainBorder" />-->
 							<Setter Property="Visibility" Value="Visible" TargetName="FilterIcon" />
 							<Setter Property="Opacity" Value="1" TargetName="TextContent" />
@@ -104,8 +108,7 @@
 							<!--<Setter Property="Visibility" Value="Visible" TargetName="MainBorder" />-->
 							<Setter Property="Visibility" Value="Collapsed" TargetName="NormalBorder" />
 							<Setter Property="Visibility" Value="Visible" TargetName="FlashMenuBorder" />
-							<Setter Property="Background" Value="White" TargetName="FlashMenuBorder" />	
-							<Setter Property="Visibility" Value="Collapsed" TargetName="FilterIcon" />
+							<Setter Property="Background" Value="#22FFFFFF" TargetName="FlashMenuBorder" />
 							<Setter Property="Opacity" Value="0.8" TargetName="TextContent" />
                         </Trigger>
 

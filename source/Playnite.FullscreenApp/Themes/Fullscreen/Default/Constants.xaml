@@ -48,6 +48,10 @@
 	
 	<SolidColorBrush x:Key="NormalBrushDark" Color="{DynamicResource MainColorDark}" />
 	<SolidColorBrush x:Key="ButtonBackgroundBrush" Color="{DynamicResource MainColor}" />
+	<!-- Overridden at runtime from the Fullscreen settings (bottom panel opacity / light mode) -->
+	<SolidColorBrush x:Key="BottomPanelBackgroundBrush" Color="#FF252525" />
+	<SolidColorBrush x:Key="BottomPanelBorderBrush" Color="#FFD3D3D3" />
+	<SolidColorBrush x:Key="BottomPanelForegroundBrush" Color="White" />
 	<SolidColorBrush x:Key="PopupBackgroundBrush" Color="{DynamicResource MainColor}" />
 	<!--<SolidColorBrush x:Key="CheckBoxCheckMarkBkBrush" Color="{DynamicResource MainColorDark}" />-->
 	<SolidColorBrush x:Key="GridItemBackgroundBrush" Color="{DynamicResource GridItemBackgroundColor}" />

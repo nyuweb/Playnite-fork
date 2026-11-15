@@ -54,6 +54,26 @@ namespace Playnite.FullscreenApp.Controls.SettingsSections
                 BindingMode.TwoWay,
                 UpdateSourceTrigger.PropertyChanged);
 
+            SliderBottomPanelOpacity.Minimum = 0;
+            SliderBottomPanelOpacity.Maximum = 100;
+            SliderBottomPanelOpacity.TickFrequency = 5;
+            SliderBottomPanelOpacity.IsSnapToTickEnabled = true;
+            BindingTools.SetBinding(
+                SliderBottomPanelOpacity,
+                Slider.ValueProperty,
+                mainModel.AppSettings.Fullscreen,
+                nameof(FullscreenSettings.BottomPanelOpacity),
+                BindingMode.TwoWay,
+                UpdateSourceTrigger.PropertyChanged);
+
+            BindingTools.SetBinding(
+                ToggleBottomPanelLight,
+                ToggleButton.IsCheckedProperty,
+                mainModel.AppSettings.Fullscreen,
+                nameof(FullscreenSettings.BottomPanelLightMode),
+                BindingMode.TwoWay,
+                UpdateSourceTrigger.PropertyChanged);
+
             BindingTools.SetBinding(
                 ToggleGameTitles,
                 ToggleButton.IsCheckedProperty,

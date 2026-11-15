@@ -356,6 +356,7 @@ namespace Playnite.FullscreenApp.ViewModels
             settings.Fullscreen.PropertyChanged += Fullscreen_PropertyChanged;
             settings.Fullscreen.FilterSettings.FilterChanged += FilterSettings_FilterChanged;
             ThemeManager.ApplyFullscreenButtonPrompts(PlayniteApplication.CurrentNative, AppSettings.Fullscreen.ButtonPrompts);
+            ApplyBottomPanelAppearance();
             InitializeCommands();
             UpdateCursorSettings();
             EventManager.RegisterClassHandler(typeof(WindowBase), WindowBase.ClosedRoutedEvent, new RoutedEventHandler(WindowBaseCloseHandler));
@@ -536,11 +537,38 @@ namespace Playnite.FullscreenApp.ViewModels
             ChildOpened = Window.Window.HasChildWindow;
         }
 
+        private void ApplyBottomPanelAppearance()
+        {
+            var settings = AppSettings.Fullscreen;
+            var dark = Color.FromRgb(0x25, 0x25, 0x25);
+            var light = Color.FromRgb(0xD3, 0xD3, 0xD3);
+            var back = settings.BottomPanelLightMode ? light : dark;
+            var border = settings.BottomPanelLightMode ? dark : light;
+            var alpha = (byte)Math.Round(255 * settings.BottomPanelOpacity / 100.0);
+
+            var panelBrush = new SolidColorBrush(Color.FromArgb(alpha, back.R, back.G, back.B));
+            var borderBrush = new SolidColorBrush(border);
+            var textBrush = new SolidColorBrush(settings.BottomPanelLightMode ? Color.FromRgb(0x20, 0x20, 0x20) : Colors.White);
+            panelBrush.Freeze();
+            borderBrush.Freeze();
+            textBrush.Freeze();
+
+            var resources = PlayniteApplication.CurrentNative.Resources;
+            resources["BottomPanelBackgroundBrush"] = panelBrush;
+            resources["BottomPanelBorderBrush"] = borderBrush;
+            resources["BottomPanelForegroundBrush"] = textBrush;
+        }
+
         private void Fullscreen_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(FullscreenSettings.Monitor) || e.PropertyName == nameof(FullscreenSettings.UsePrimaryDisplay))
             {
                 SetViewSizeAndPosition(IsFullScreen);
+            }
+            else if (e.PropertyName == nameof(FullscreenSettings.BottomPanelOpacity) ||
+                e.PropertyName == nameof(FullscreenSettings.BottomPanelLightMode))
+            {
+                ApplyBottomPanelAppearance();
             }
             else if (e.PropertyName == nameof(FullscreenSettings.ButtonPrompts))
             {

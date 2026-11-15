@@ -171,6 +171,36 @@ namespace Playnite
             }
         }
 
+        private int bottomPanelOpacity = 100;
+        public int BottomPanelOpacity
+        {
+            get
+            {
+                return bottomPanelOpacity;
+            }
+
+            set
+            {
+                bottomPanelOpacity = Math.Max(0, Math.Min(100, value));
+                OnPropertyChanged();
+            }
+        }
+
+        private bool bottomPanelLightMode = false;
+        public bool BottomPanelLightMode
+        {
+            get
+            {
+                return bottomPanelLightMode;
+            }
+
+            set
+            {
+                bottomPanelLightMode = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool showClock = true;
         public bool ShowClock
         {
