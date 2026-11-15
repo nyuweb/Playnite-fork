@@ -127,7 +127,7 @@
                                               HorizontalScrollBarVisibility="Hidden"
                                               VerticalScrollBarVisibility="Disabled"
                                               CanContentScroll="True">
-                                    <ItemsPresenter />
+                                    <ItemsPresenter Margin="16,0" />
                                 </ScrollViewer>
                             </ControlTemplate>
                         </ItemsControl.Template>
