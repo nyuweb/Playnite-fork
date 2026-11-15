@@ -173,41 +173,41 @@
 
     <DataTemplate x:Key="MainMenuLockSystemButtonTemplate">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="&#xef7a;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
-                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0"/>
             <TextBlock Text="{DynamicResource LOCMenuLockSystem}" VerticalAlignment="Center" />
+            <TextBlock Text="&#xef7a;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,20,0"/>
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="MainMenuLogoutUserButtonTemplate">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="&#xefe9;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
-                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0"/>
             <TextBlock Text="{DynamicResource LOCMenuLogoutUser}" VerticalAlignment="Center" />
+            <TextBlock Text="&#xefe9;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,20,0"/>
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="MainMenuClientsButtonTemplate">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="&#xec84;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
-                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0"/>
             <TextBlock Text="{DynamicResource LOCMenuOpenClient}" VerticalAlignment="Center" />
+            <TextBlock Text="&#xec84;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,20,0"/>
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="MainMenuToolsButtonTemplate">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="&#xf013;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
-                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0"/>
             <TextBlock Text="{DynamicResource LOCMenuTools}" VerticalAlignment="Center" />
+            <TextBlock Text="&#xf013;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,20,0"/>
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="MainMenuExtensionsButtonTemplate">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="&#xefc7;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
-                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0"/>
             <TextBlock Text="{DynamicResource LOCExtensions}" VerticalAlignment="Center" />
+            <TextBlock Text="&#xefc7;" FontFamily="{DynamicResource FontIcoFont}" FontSize="24"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,20,0"/>
         </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

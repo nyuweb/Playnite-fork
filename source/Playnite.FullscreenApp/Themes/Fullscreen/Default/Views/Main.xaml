@@ -723,8 +723,12 @@
                                         </Style>
                                     </StackPanel.Style>
 
-                                    <FilterPresetSelector x:Name="PART_ItemsFilterPresets" Margin="0,-51,0,0"
-						FocusVisualStyle="{x:Null}" />
+                                    <FilterPresetSelector x:Name="PART_ItemsFilterPresets" Margin="0,-35,0,0"
+						FocusVisualStyle="{x:Null}">
+						<FilterPresetSelector.RenderTransform>
+							<TranslateTransform Y="-16" />
+						</FilterPresetSelector.RenderTransform>
+					</FilterPresetSelector>
 
 
                                 </StackPanel>
