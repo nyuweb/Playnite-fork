@@ -703,6 +703,11 @@
 
                                 <StackPanel x:Name="FilterPanel" Grid.Row="0" Orientation="Horizontal">
 
+                                    <!-- Raises the platform pills above the bottom panel without affecting layout or clipping -->
+                                    <StackPanel.RenderTransform>
+                                        <TranslateTransform Y="-60" />
+                                    </StackPanel.RenderTransform>
+
                                     <StackPanel.Style>
                                         <Style>
                                             <Setter Property="ItemsControl.Visibility" Value="Hidden"/>
@@ -711,7 +716,6 @@
 
                                                 <DataTrigger Binding="{Binding ElementName=ChangeViewButton, Path=IsChecked}" Value="true">
                                                     <Setter Property="ItemsControl.Height" Value="0"/>
-                                                    <Setter Property="ItemsControl.Margin" Value="0,-60,0,0"/>
                                                 </DataTrigger>
 
                                                 <DataTrigger Binding="{Binding ElementName=ChangeViewButton, Path=IsChecked}" Value="false">

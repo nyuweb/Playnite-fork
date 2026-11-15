@@ -36,11 +36,11 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="{Binding Title}" Margin="10,0,0,10"
-                               FontSize="34" FontWeight="SemiBold"
-                               Foreground="{DynamicResource BottomPanelForegroundBrush}" />
+                    <ContentControl Grid.Row="0" Focusable="False" Content="{Binding}" Margin="5,5,0,10"
+                                    ContentTemplate="{DynamicResource MoreGamesHeaderTemplate}" />
 
-                    <pctrls:ListBoxEx x:Name="ListMoreGames" Grid.Row="1"
+                    <!-- Margin compensates the -50/+50 shift of the tile container style (ListGameItemStyle) -->
+                    <pctrls:ListBoxEx x:Name="ListMoreGames" Grid.Row="1" Margin="50,0,-50,0"
                                       Background="#00000000" BorderThickness="0" FocusVisualStyle="{x:Null}"
                                       KeyboardNavigation.DirectionalNavigation="Once"
                                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
