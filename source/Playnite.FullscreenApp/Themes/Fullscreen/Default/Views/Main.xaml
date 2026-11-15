@@ -248,38 +248,12 @@
                             </FadeImage>
 
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="80,0,0,0">
-                                <Border x:Name="ExtraMetadataLoader_LogoLoaderControlGrid"
-												VerticalAlignment="Stretch"
-												HorizontalAlignment="Left"
-												MinHeight="{PluginSettings Plugin=ExtraMetadataLoader, Path=LogoMaxHeight, FallbackValue=0}"
-												Tag="{DynamicResource DetailsViewAllowUseOfLogos}">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{PluginSettings Plugin=ExtraMetadataLoader, Path=IsLogoAvailable, FallbackValue=False}" Value="false">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}, FallbackValue=False}" Value="false" >
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <ContentControl x:Name="ExtraMetadataLoader_LogoLoaderControl" />
-                                </Border>
-
                                 <TextBlock x:Name="GameTitle" Text="{Binding SelectedGame.DisplayName, NotifyOnTargetUpdated=True}" FontFamily="Lato"
 									Foreground="White" FontSize="46" VerticalAlignment="Center" TextWrapping="Wrap" MaxHeight="150"
 									TextTrimming="CharacterEllipsis" FontWeight="SemiBold">
                                     <TextBlock.Style>
                                         <Style>
                                             <Setter Property="ItemsControl.Visibility" Value="Collapsed" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{PluginSettings Plugin=ExtraMetadataLoader, Path=IsLogoAvailable, FallbackValue=False}" Value="false">
-                                                    <Setter Property="ItemsControl.Visibility" Value="Visible" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
                                         </Style>
                                     </TextBlock.Style>
                                     <TextBlock.Effect>
@@ -297,76 +271,6 @@
                                     </TextBlock.Triggers>
                                 </TextBlock>
 
-                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-
-                                    <StackPanel x:Name="PlatformSourceInfo" Width="Auto" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Image 	x:Name="ButtonSourceImage" Source="{ThemeFileBinding SelectedGame.Source.Name, PathFormat='Icons/Source/{0}.png'}" Height="50" 
-												Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
-                                            <Image.Effect>
-                                                <DropShadowEffect ShadowDepth="2" RenderingBias="Quality" Color="{DynamicResource BlackColor}" />
-                                            </Image.Effect>
-                                        </Image>
-                                        <Image 	x:Name="ButtonPlatformImage" Source="{ThemeFileBinding SelectedGame.Platforms[0].Name, PathFormat='Icons/Source/{0}.png'}" Height="50" 
-												Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
-                                            <Image.Effect>
-                                                <DropShadowEffect ShadowDepth="2" RenderingBias="Quality" Color="{DynamicResource BlackColor}" />
-                                            </Image.Effect>
-                                        </Image>
-                                        <TextBlock  Background="Transparent" Style="{DynamicResource TextBlockBaseStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-												   Text="&#xF127;" FontFamily="Segoe MDL2 Assets" FontSize="3" Margin="15,-3">
-                                            <TextBlock.Effect>
-                                                <DropShadowEffect ShadowDepth="2" RenderingBias="Quality" Color="{DynamicResource BlackColor}" />
-                                            </TextBlock.Effect>
-                                        </TextBlock>
-                                    </StackPanel>
-
-                                    <StackPanel x:Name="YearInfo" Width="Auto" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Border x:Name="YearButton" Margin="0,0,7,0" BorderBrush="White" CornerRadius="8" BorderThickness="2" Height="40">
-                                            <TextBlock x:Name="ReleaseYear" Background="Transparent" Style="{DynamicResource TextBlockBaseStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-													           Text="{Binding SelectedGame.ReleaseYear}" FontFamily="{DynamicResource FontFamily}" FontSize="20" Margin="8,0">
-                                                <TextBlock.Effect>
-                                                    <DropShadowEffect ShadowDepth="2" RenderingBias="Quality" Color="{DynamicResource BlackColor}" />
-                                                </TextBlock.Effect>
-                                            </TextBlock>
-                                        </Border>
-                                    </StackPanel>
-
-                                    <StackPanel x:Name="TimePlayedInfo" Width="Auto" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Border x:Name="TimePlayedButton" Margin="0,0,7,0" BorderBrush="White" CornerRadius="8" BorderThickness="2" Height="40">
-                                            <TextBlock x:Name="TimePlayed" Background="Transparent" Style="{DynamicResource TextBlockBaseStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-													           Text="{Binding SelectedGame.Playtime, Converter={StaticResource PlayTimeToStringConverter}}" 
-                                                               FontFamily="{DynamicResource FontFamily}" FontSize="20" Margin="8,0">
-                                                <TextBlock.Effect>
-                                                    <DropShadowEffect ShadowDepth="2" RenderingBias="Quality" Color="{DynamicResource BlackColor}" />
-                                                </TextBlock.Effect>
-                                            </TextBlock>
-                                        </Border>
-                                    </StackPanel>
-
-                                    <StackPanel x:Name="LastPlayedInfo" Width="Auto" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Border x:Name="LastPlayedButton" Margin="0,0,7,0" BorderBrush="White" CornerRadius="8" BorderThickness="2" Height="40">
-                                            <TextBlock x:Name="LastPlayed" Background="Transparent" Style="{DynamicResource TextBlockBaseStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-													           Text="{Binding SelectedGame.LastActivity, Converter={StaticResource DateTimeToLastPlayedConverter}}"
-                                                               FontFamily="{DynamicResource FontFamily}" FontSize="20" Margin="8,0">
-                                                <TextBlock.Effect>
-                                                    <DropShadowEffect ShadowDepth="2" RenderingBias="Quality" Color="{DynamicResource BlackColor}" />
-                                                </TextBlock.Effect>
-                                            </TextBlock>
-                                        </Border>
-                                    </StackPanel>
-                                    
-                                    <StackPanel x:Name="PlayStatusInfo" Width="Auto" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Border x:Name="PlayStatusButton" Margin="0" BorderBrush="White" CornerRadius="8" BorderThickness="2" Height="40">
-                                            <TextBlock x:Name="PlayStatus" Background="Transparent" Style="{DynamicResource TextBlockBaseStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-													           Text="{Binding SelectedGame.CompletionStatus}" FontFamily="{DynamicResource FontFamily}" FontSize="20" Margin="8,0">
-                                                <TextBlock.Effect>
-                                                    <DropShadowEffect ShadowDepth="2" RenderingBias="Quality" Color="{DynamicResource BlackColor}" />
-                                                </TextBlock.Effect>
-                                            </TextBlock>
-                                        </Border>
-                                    </StackPanel>
-
-                                </StackPanel>
                             </StackPanel>
 
                             <Border x:Name="BackgroundBorder" Background="{DynamicResource MainScreenOverlay}"
@@ -591,10 +495,6 @@
                                     <ButtonEx x:Name="PART_ButtonPlay"
                                               Style="{DynamicResource ButtonBottomMenu}"
                                               Content="{DynamicResource LOCPlayGame}" />
-                                    <!--Details-->
-                                    <ButtonEx x:Name="PART_ButtonDetails"
-                                              Style="{DynamicResource ButtonBottomMenu}"
-                                              Content="{DynamicResource LOCGameDetails}" />
                                     <!--Search-->
                                     <ButtonEx x:Name="PART_ButtonSearch"
                                               Style="{DynamicResource ButtonBottomMenu}"
