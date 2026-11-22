@@ -22,11 +22,26 @@ param(
 )
 
 $AudioSnapshotFile = "$SnapshotFile.audio"
+$LogFile = Join-Path (Split-Path -Parent $SnapshotFile) 'switch-display.log'
 
-# Execute un bloc, retourne $true / $false selon la reussite
+function Write-Log([string]$msg) {
+    try { Add-Content -Path $LogFile -Value ('{0} [{1}] {2}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Action, $msg) } catch { }
+}
+
+function Write-State([string]$title) {
+    try {
+        $t = Get-DisplayInfo | Format-Table DisplayId, DisplayName, Active, Primary, Mode -AutoSize | Out-String -Width 200
+        Write-Log "$title`r`n$t"
+    } catch { Write-Log "$title : etat illisible ($($_.Exception.Message))" }
+}
+
+# Execute un bloc, retourne $true / $false selon la reussite (les erreurs sont journalisees)
 function Step([scriptblock]$code) {
-    try   { & $code | Out-Null; return $true }
-    catch { return $false }
+    $Error.Clear()
+    try   { & $code | Out-Null }
+    catch { Write-Log "Echec: $($_.Exception.Message) :: $($code.ToString().Trim())"; return $false }
+    if ($Error.Count -gt 0) { Write-Log "Erreur non bloquante: $($Error[0]) :: $($code.ToString().Trim())" }
+    return $true
 }
 
 function Find-Display([string]$name) {
@@ -78,7 +93,9 @@ function Set-DisplayModeSafe($id, [int]$w, [int]$h, [int]$hz) {
     }
 }
 
-try { Import-Module DisplayConfig -ErrorAction Stop } catch { exit 1 }
+if ((Test-Path $LogFile) -and ((Get-Item $LogFile).Length -gt 200KB)) { Remove-Item $LogFile -Force -ErrorAction SilentlyContinue }
+Write-Log "Demarrage: DisplayName='$DisplayName' ${Width}x${Height} @ $Hz Hz, snapshot=$SnapshotFile (existe: $(Test-Path $SnapshotFile))"
+try { Import-Module DisplayConfig -ErrorAction Stop } catch { Write-Log "Module DisplayConfig absent: $($_.Exception.Message)"; exit 1 }
 $haveAudio = $true
 try { Import-Module AudioDeviceCmdlets -ErrorAction Stop } catch { $haveAudio = $false }
 
@@ -86,6 +103,7 @@ try { Import-Module AudioDeviceCmdlets -ErrorAction Stop } catch { $haveAudio = 
 #  Restore
 # ============================================================
 if ($Action -eq 'Restore') {
+    Write-State 'Etat avant restauration'
     if (Test-Path $SnapshotFile) {
         $snap = @(Get-Content -Path $SnapshotFile -Raw | ConvertFrom-Json)
         $wantActive = @($snap | Where-Object { $_.Active })
@@ -113,6 +131,7 @@ if ($Action -eq 'Restore') {
         }
         Remove-Item -Path $SnapshotFile -Force -ErrorAction SilentlyContinue
     }
+    else { Write-Log 'Aucune photo a restaurer.' }
 
     if (Test-Path $AudioSnapshotFile) {
         if ($haveAudio) {
@@ -121,14 +140,16 @@ if ($Action -eq 'Restore') {
         }
         Remove-Item -Path $AudioSnapshotFile -Force -ErrorAction SilentlyContinue
     }
+    Write-State 'Etat apres restauration'
     exit 0
 }
 
 # ============================================================
 #  Switch
 # ============================================================
+Write-State 'Etat avant switch'
 $target = Find-Display $DisplayName
-if (-not $target) { exit 2 }
+if (-not $target) { Write-Log "Ecran introuvable: $DisplayName"; exit 2 }
 
 # Photo de l'etat actuel (ecrans, principal, resolution, frequence, sortie audio)
 $snap = @(Get-DisplayInfo | ForEach-Object {
@@ -192,5 +213,7 @@ if ($haveAudio) {
             Start-Sleep -Milliseconds 500
         }
     }
+    if (-not $done) { Write-Log "Peripherique audio introuvable pour: $DisplayName" }
 }
+Write-State 'Etat apres switch'
 exit 0
