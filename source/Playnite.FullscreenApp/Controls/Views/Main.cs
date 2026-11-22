@@ -104,10 +104,10 @@ namespace Playnite.FullscreenApp.Controls.Views
                     }
                     else
                     {
-                        this.mainModel.ActivateSelectedCommand.Execute(a);
+                        this.mainModel.OpenGameMenuCommand.Execute();
                     }
                 },
-                (a) => ListGameItems?.SelectedItem is MoreGamesItem || this.mainModel.ActivateSelectedCommand.CanExecute(a));
+                (a) => ListGameItems?.SelectedItem is MoreGamesItem || this.mainModel.OpenGameMenuCommand.CanExecute());
 
             openGameMenuListCommand = new RelayCommand<object>(
                 (a) =>
@@ -213,7 +213,6 @@ namespace Playnite.FullscreenApp.Controls.Views
             ListGameItems.InputBindings.Add(new KeyBinding() { Command = openGameMenuListCommand, Key = swapStartInput ? Key.A : Key.X });
             ListGameItems.InputBindings.Add(new KeyBinding() { Command = activateListItemCommand, Key = swapStartInput ? Key.X : Key.A });
             ListGameItems.InputBindings.Add(new KeyBinding() { Command = activateListItemCommand, Key = Key.Enter });
-            ListGameItems.InputBindings.Add(new GameControllerInputBinding(openGameMenuListCommand, ControllerInput.Start));
             ListGameItems.InputBindings.Add(new GameControllerInputBinding(activateListItemCommand, ControllerInput.X));
             ListGameItems.InputBindings.Add(new GameControllerInputBinding(activateListItemCommand, confirmInput));
 

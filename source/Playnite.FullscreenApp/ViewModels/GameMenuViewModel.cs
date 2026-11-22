@@ -89,23 +89,6 @@ namespace Playnite.FullscreenApp.ViewModels
                 items.Add(new GameActionItem(InstallGameCommand, ResourceProvider.GetString(LOC.InstallGame), "GameMenuInstallButtonTemplate"));
             }
 
-            game.GameActions?.Where(a => !a.IsPlayAction).ForEach(a => items.Add(new GameActionItem(ActivateActionCommand, a, a.Name, "GameMenuCustomActionButtonTemplate")));
-
-            items.Add(new GameActionItem(ToggleFavoritesCommand, game.Favorite ? ResourceProvider.GetString(LOC.RemoveFavoriteGame) : ResourceProvider.GetString(LOC.FavoriteGame), "GameMenuFavoriesButtonTemplate"));
-            items.Add(new GameActionItem(ToggleVisibilityCommand, game.Hidden ? ResourceProvider.GetString(LOC.UnHideGame) : ResourceProvider.GetString(LOC.HideGame), "GameMenuVisibilityButtonTemplate"));
-            if (HdrUtilities.IsHdrSupported())
-            {
-                items.Add(new GameActionItem(ToggleHdrCommand, game.EnableSystemHdr ? ResourceProvider.GetString(LOC.DisableHdr) : ResourceProvider.GetString(LOC.EnableHdr), "GameMenuHdrButtonTemplate"));
-            }
-            items.Add(new GameActionItem(SetFieldsCommand, ResourceProvider.GetString(LOC.MenuSetFields), "GameMenuSetFieldsTemplate"));
-            items.Add(new GameActionItem(OpenExtensionCommand, ResourceProvider.GetString(LOC.Extensions), "GameMenuExtensionsTemplate"));
-            items.Add(new GameActionItem(RemoveGameCommand, ResourceProvider.GetString(LOC.RemoveGame), "GameMenuRemoveButtonTemplate"));
-
-            if (!game.IsCustomGame && game.IsInstalled)
-            {
-                items.Add(new GameActionItem(UninstallGameCommand, ResourceProvider.GetString(LOC.UninstallGame), "GameMenuUninstallButtonTemplate"));
-            }
-
             GameItems = items;
         }
 
