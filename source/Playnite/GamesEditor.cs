@@ -88,6 +88,7 @@ namespace Playnite
         public IDialogsFactory Dialogs { get; private set; }
         public PlayniteSettings AppSettings { get; private set; }
         public Dictionary<Guid, RunningGame> RunningGames { get; } = new Dictionary<Guid, RunningGame>();
+        private Guid displaySwitchGameId = Guid.Empty;
 
         public List<Game> QuickLaunchItems
         {
@@ -186,7 +187,7 @@ namespace Playnite
             }
         }
 
-        public void PlayGame(Game game, bool launchedFromUI, int actionIndex = -1)
+        public void PlayGame(Game game, bool launchedFromUI, int actionIndex = -1, string targetDisplay = null)
         {
             if (!game.IsInstalled)
             {
@@ -306,6 +307,7 @@ namespace Playnite
                 void cancelStartup(string message)
                 {
                     logger.Warn(message);
+                    RestoreDisplay(game.Id);
                     controllers.InvokeOnGameStartupCancelled(this, game.GetCopy());
                     controllers.RemovePlayController(game.Id);
                     UpdateGameState(game.Id, null, null, null, null, false);
@@ -343,6 +345,13 @@ namespace Playnite
                     {  "SourceAction", startingArgs.SourceAction },
                     {  "SelectedRomFile", startingArgs.SelectedRomFile }
                 };
+
+                // The game's own display (or the one picked in the game menu) becomes the only active one for the session.
+                var displayName = targetDisplay.IsNullOrWhiteSpace() ? game.OutputDisplay : targetDisplay;
+                if (!displayName.IsNullOrWhiteSpace() && DisplayUtilities.SwitchTo(displayName, game.ResolutionWidth, game.ResolutionHeight, game.Frequency))
+                {
+                    displaySwitchGameId = game.Id;
+                }
 
                 //Get the current system HDR status only if this is the first game launched with HDR controlled by Playnite
                 if (!controllers.PlayControllers.Any(c => c.Game.Id != game.Id && c.Game.EnableSystemHdr))
@@ -1302,6 +1311,7 @@ namespace Playnite
             Database.Games.Update(dbGame);
             if (wasRunningOrLaunching)
             {
+                RestoreDisplay(game.Id);
                 RunningGames.Remove(game.Id);
                 Extensions.InvokeOnGameStopped(game, ellapsedTime, true);
             }
@@ -1418,6 +1428,17 @@ namespace Playnite
             }
         }
 
+        private void RestoreDisplay(Guid gameId)
+        {
+            if (displaySwitchGameId == Guid.Empty || displaySwitchGameId != gameId)
+            {
+                return;
+            }
+
+            displaySwitchGameId = Guid.Empty;
+            DisplayUtilities.Restore();
+        }
+
         private void Controllers_Stopped(object sender, GameStoppedEventArgs args)
         {
             var game = args.Source.Game;
@@ -1439,6 +1460,16 @@ namespace Playnite
             Database.Games.Update(dbGame);
             controllers.RemoveController(args.Source);
             gameStartups.TryRemove(game.Id, out _);
+
+            // Reset HDR if there are no more active games with HDR controlled by Playnite
+            // and the game being closed has HDR controlled by Playnite
+            if (!controllers.PlayControllers.Any(c => c.Game.EnableSystemHdr) && game.EnableSystemHdr)
+            {
+                HdrUtilities.SetHdrEnabled(wasHdrEnabled);
+            }
+
+            // HDR is reset on the game's display first, then the previous display setup comes back before Playnite is restored.
+            RestoreDisplay(game.Id);
 
             var restore = false;
             if (Application.Mode == ApplicationMode.Desktop && AppSettings.AfterGameClose == AfterGameCloseOptions.Restore)
@@ -1470,13 +1501,6 @@ namespace Playnite
             if (AppSettings.DiscordPresenceEnabled)
             {
                 Application.Discord?.ClearPresence();
-            }
-
-            // Reset HDR if there are no more active games with HDR controlled by Playnite
-            // and the game being closed has HDR controlled by Playnite
-            if (!controllers.PlayControllers.Any(c => c.Game.EnableSystemHdr) && game.EnableSystemHdr)
-            {
-                HdrUtilities.SetHdrEnabled(wasHdrEnabled);
             }
 
             var scriptVars = new Dictionary<string, object>();

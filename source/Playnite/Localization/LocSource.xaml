@@ -772,6 +772,7 @@ More information at https://playnite.link/cefstartup</sys:String>
     <sys:String x:Key="LOCSetCompletionStatus">Set Completion Status</sys:String>
     <sys:String x:Key="LOCRemoveGame">Remove</sys:String>
     <sys:String x:Key="LOCPlayGame">Play</sys:String>
+    <sys:String x:Key="LOCPlayGameOnDisplay">Play on {0}</sys:String>
     <sys:String x:Key="LOCInstallGame">Install</sys:String>
     <sys:String x:Key="LOCGameOptions">Game Options</sys:String>
     <sys:String x:Key="LOCGameDetails">Details</sys:String>

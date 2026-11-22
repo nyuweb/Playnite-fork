@@ -59,6 +59,7 @@ namespace Playnite.FullscreenApp.ViewModels
 
         public RelayCommand CloseCommand => new RelayCommand(() => Close());
         public RelayCommand StartGameCommand => new RelayCommand(() => StartGame());
+        public RelayCommand<DisplayInfo> StartGameOnDisplayCommand => new RelayCommand<DisplayInfo>((a) => StartGame(a?.Name));
         public RelayCommand InstallGameCommand => new RelayCommand(() => InstallGame());
         public RelayCommand UninstallGameCommand => new RelayCommand(() => UninstallGame());
         public RelayCommand ToggleFavoritesCommand => new RelayCommand(() => ToggleFavorites());
@@ -81,6 +82,14 @@ namespace Playnite.FullscreenApp.ViewModels
             Game = game;
             var items = new List<GameActionItem>();
             items.Add(new GameActionItem(StartGameCommand, ResourceProvider.GetString(LOC.PlayGame), "GameMenuPlayButtonTemplate"));
+            foreach (var display in DisplayUtilities.GetDisplays())
+            {
+                items.Add(new GameActionItem(
+                    StartGameOnDisplayCommand,
+                    display,
+                    string.Format(ResourceProvider.GetString(LOC.PlayGameOnDisplay), display.Label),
+                    "GameMenuPlayButtonTemplate"));
+            }
 
             GameItems = items;
         }
@@ -101,10 +110,10 @@ namespace Playnite.FullscreenApp.ViewModels
             gamesEditor.ActivateAction(Game, action);
         }
 
-        public void StartGame()
+        public void StartGame(string targetDisplay = null)
         {
             Close();
-            gamesEditor.PlayGame(Game, true);
+            gamesEditor.PlayGame(Game, true, -1, targetDisplay);
         }
 
         public void InstallGame()
