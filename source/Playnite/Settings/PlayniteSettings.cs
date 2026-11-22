@@ -2569,8 +2569,31 @@ namespace Playnite
             }
         }
 
+        private static void DeleteOldLogs()
+        {
+            try
+            {
+                var limit = DateTime.Now.AddDays(-7);
+                foreach (var pattern in new[] { "playnite*.log", "extensions*.log", "switch-display*.log", "debug.log" })
+                {
+                    foreach (var file in Directory.GetFiles(PlaynitePaths.ConfigRootPath, pattern))
+                    {
+                        if (File.GetLastWriteTime(file) < limit)
+                        {
+                            File.Delete(file);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Logger is not configured yet and old logs are not worth failing the startup.
+            }
+        }
+
         public static void ConfigureLogger()
         {
+            DeleteOldLogs();
             var config = new LoggingConfiguration();
             config.DefaultCultureInfo = new System.Globalization.CultureInfo("en-US");
 #if DEBUG
