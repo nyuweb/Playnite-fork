@@ -80,14 +80,7 @@ namespace Playnite.FullscreenApp.ViewModels
             this.gamesEditor = gamesEditor;
             Game = game;
             var items = new List<GameActionItem>();
-            if (game.IsInstalled)
-            {
-                items.Add(new GameActionItem(StartGameCommand, ResourceProvider.GetString(LOC.PlayGame), "GameMenuPlayButtonTemplate"));
-            }
-            else
-            {
-                items.Add(new GameActionItem(InstallGameCommand, ResourceProvider.GetString(LOC.InstallGame), "GameMenuInstallButtonTemplate"));
-            }
+            items.Add(new GameActionItem(StartGameCommand, ResourceProvider.GetString(LOC.PlayGame), "GameMenuPlayButtonTemplate"));
 
             GameItems = items;
         }
