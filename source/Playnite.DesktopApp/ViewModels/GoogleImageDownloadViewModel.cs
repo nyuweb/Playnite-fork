@@ -212,7 +212,9 @@ namespace Playnite.DesktopApp.ViewModels
             SafeSearchSettings safeSearch,
             WebImageSearchSource source,
             double itemWidth = 0,
-            double itemHeigth = 0)
+            double itemHeigth = 0,
+            int? initialSearchWidth = null,
+            int? initialSearchHeight = null)
         {
             this.window = window;
             this.resources = resources;
@@ -228,6 +230,8 @@ namespace Playnite.DesktopApp.ViewModels
                 ItemHeight = itemHeigth;
             }
 
+            searchWidth = initialSearchWidth;
+            searchHeight = initialSearchHeight;
             downloader = new GoogleImageDownloader();
             SearchTerm = initialSearch;
             if (!initialSearch.IsNullOrEmpty())

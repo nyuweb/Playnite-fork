@@ -695,7 +695,7 @@ namespace Playnite.DesktopApp.ViewModels
         {
             var searchTerm = appSettings.WebImageSarchCoverTerm.IsNullOrWhiteSpace() ? $"{EditingGame.Name} cover" : appSettings.WebImageSarchCoverTerm;
             searchTerm = ReplaceImageSearchVariables(searchTerm);
-            var image = SelectGoogleImage(searchTerm, tempEditingCoverFileName);
+            var image = SelectGoogleImage(searchTerm, tempEditingCoverFileName, searchWidth: 1000, searchHeight: 1000);
             if (!image.IsNullOrEmpty())
             {
                 EditingGame.CoverImage = image;
@@ -706,14 +706,14 @@ namespace Playnite.DesktopApp.ViewModels
         {
             var searchTerm = appSettings.WebImageSarchBackgroundTerm.IsNullOrWhiteSpace() ? $"{EditingGame.Name} wallpaper" : appSettings.WebImageSarchBackgroundTerm;
             searchTerm = ReplaceImageSearchVariables(searchTerm);
-            var image = SelectGoogleImage(searchTerm, tempEditingBackgroundFileName);
+            var image = SelectGoogleImage(searchTerm, tempEditingBackgroundFileName, searchWidth: 1920, searchHeight: 1080);
             if (!image.IsNullOrEmpty())
             {
                 EditingGame.BackgroundImage = image;
             }
         }
 
-        public string SelectGoogleImage(string searchTerm, string tempFileName, double imageWidth = 0, double imageHeight = 0)
+        public string SelectGoogleImage(string searchTerm, string tempFileName, double imageWidth = 0, double imageHeight = 0, int? searchWidth = null, int? searchHeight = null)
         {
             var model = new GoogleImageDownloadViewModel(
                 new GoogleImageDownloadWindowFactory(),
@@ -722,7 +722,9 @@ namespace Playnite.DesktopApp.ViewModels
                 appSettings.WebImageSafeSearch,
                 appSettings.DefaultWebImageSource,
                 imageWidth,
-                imageHeight);
+                imageHeight,
+                searchWidth,
+                searchHeight);
             if (model.OpenView() == true)
             {
                 try
