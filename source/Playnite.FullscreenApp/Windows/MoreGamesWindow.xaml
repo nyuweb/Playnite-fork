@@ -18,11 +18,10 @@
     <c:WindowBase.InputBindings>
         <KeyBinding Key="Esc" Command="{Binding CloseCommand}" />
         <KeyBinding Key="Backspace" Command="{Binding CloseCommand}" />
-        <KeyBinding Key="Enter" Command="{Binding ActivateCommand}" />
+        <KeyBinding Key="Enter" Command="{Binding OpenGameMenuCommand}" />
         <pin:GameControllerInputBinding Button="{Binding Path=(pin:GameControllerGesture.CancellationBinding)}" Command="{Binding CloseCommand}" />
-        <pin:GameControllerInputBinding Button="{Binding Path=(pin:GameControllerGesture.ConfirmationBinding)}" Command="{Binding ActivateCommand}" />
-        <pin:GameControllerInputBinding Button="X" Command="{Binding ActivateCommand}" />
-        <pin:GameControllerInputBinding Button="Start" Command="{Binding OpenGameMenuCommand}" />
+        <pin:GameControllerInputBinding Button="{Binding Path=(pin:GameControllerGesture.ConfirmationBinding)}" Command="{Binding OpenGameMenuCommand}" />
+        <pin:GameControllerInputBinding Button="X" Command="{Binding OpenGameMenuCommand}" />
     </c:WindowBase.InputBindings>
 
     <Viewbox>

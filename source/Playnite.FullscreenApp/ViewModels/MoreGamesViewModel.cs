@@ -34,23 +34,6 @@ namespace Playnite.FullscreenApp.ViewModels
 
         public RelayCommand CloseCommand => new RelayCommand(() => Close());
 
-        public RelayCommand<object> ActivateCommand => new RelayCommand<object>((a) =>
-        {
-            if (SelectedGame != null)
-            {
-                // Launch only after the modal window is fully closed, same as launching from the main list.
-                var game = SelectedGame;
-                pendingAction = () =>
-                {
-                    LogManager.GetLogger().Info($"[restore timing] Launching {game.Name} from the More grid.");
-                    MainModel.SelectedGame = game;
-                    MainModel.ActivateSelectedCommand.Execute(a);
-                };
-
-                Close();
-            }
-        });
-
         public RelayCommand<object> OpenGameMenuCommand => new RelayCommand<object>((a) =>
         {
             if (SelectedGame != null)
@@ -59,15 +42,6 @@ namespace Playnite.FullscreenApp.ViewModels
                 MainModel.OpenGameMenu();
             }
         });
-
-        private Action pendingAction;
-
-        public void RunPendingAction()
-        {
-            var action = pendingAction;
-            pendingAction = null;
-            action?.Invoke();
-        }
 
         public MoreGamesViewModel(IWindowFactory window, FullscreenAppViewModel mainModel)
         {

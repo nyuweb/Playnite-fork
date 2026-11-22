@@ -717,7 +717,6 @@ namespace Playnite.FullscreenApp.ViewModels
             vm.OpenView();
             GameListFocused = false;
             GameListFocused = true;
-            vm.RunPendingAction();
         }
 
         public void OpenGameMenu()
