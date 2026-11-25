@@ -834,11 +834,6 @@ namespace Playnite.DesktopApp.ViewModels
                     game.Frequency = EditingGame.Frequency;
                 }
 
-                if (UseOutputDisplayChanges)
-                {
-                    game.OutputDisplay = EditingGame.OutputDisplay;
-                }
-
                 if (UseHiddenChanges)
                 {
                     game.Hidden = EditingGame.Hidden;

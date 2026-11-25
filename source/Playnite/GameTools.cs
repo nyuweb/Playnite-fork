@@ -181,12 +181,6 @@ namespace Playnite
                 dummyGame.Frequency = firstFrequency;
             }
 
-            var firstOutputDisplay = firstGame.OutputDisplay;
-            if (games.All(a => a.OutputDisplay == firstOutputDisplay) == true)
-            {
-                dummyGame.OutputDisplay = firstOutputDisplay;
-            }
-
             var firstHidden = firstGame.Hidden;
             if (games.All(a => a.Hidden == firstHidden) == true)
             {

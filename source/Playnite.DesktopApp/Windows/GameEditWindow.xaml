@@ -620,13 +620,6 @@
                               ItemsSource="{Binding FrequencyChoices}" DisplayMemberPath="Label"
                               SelectedValuePath="Value" SelectedValue="{Binding EditingGame.Frequency}" />
 
-                    <!-- Output display -->
-                    <TextBlock Grid.Column="1" Grid.Row="15" Text="{DynamicResource LOCGameOutputDisplayTitle}" />
-                    <CheckBox Grid.Column="0" Grid.Row="15" Style="{StaticResource SaveChangesCheck}"
-                              IsChecked="{Binding UseOutputDisplayChanges}"/>
-                    <TextBox Grid.Column="2" Grid.Row="15"
-                             Text="{Binding EditingGame.OutputDisplay, UpdateSourceTrigger=PropertyChanged}" />
-
                     <!-- GameId -->
                     <TextBlock Grid.Column="4" Grid.Row="0" Text="{DynamicResource LOCGameId}"
                                Visibility="{Binding IsSingleGameEdit, Converter={StaticResource BooleanToVisibilityConverter}}" />

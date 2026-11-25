@@ -695,7 +695,6 @@ namespace Playnite
             }
 
             logger.Info($"Application {CurrentVersion} started");
-            Task.Run(() => DisplayUtilities.RefreshAndSave());
 
             ExtensionsInstallResult?.Where(a => a.InstallError != null).ForEach(ext =>
                 Notifications.Add(new NotificationMessage(

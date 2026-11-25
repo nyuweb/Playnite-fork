@@ -185,9 +185,7 @@ namespace Playnite.SDK.Models
         ///
         ResolutionHeight = 94,
         ///
-        Frequency = 95,
-        ///
-        OutputDisplay = 96
+        Frequency = 95
     }
 
     /// <summary>
@@ -320,24 +318,6 @@ namespace Playnite.SDK.Models
             set
             {
                 frequency = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string outputDisplay;
-        /// <summary>
-        /// Gets or sets display output used to play the game.
-        /// </summary>
-        public string OutputDisplay
-        {
-            get
-            {
-                return outputDisplay;
-            }
-
-            set
-            {
-                outputDisplay = value;
                 OnPropertyChanged();
             }
         }
@@ -1781,7 +1761,6 @@ namespace Playnite.SDK.Models
                 ResolutionWidth = ResolutionWidth,
                 ResolutionHeight = ResolutionHeight,
                 Frequency = Frequency,
-                OutputDisplay = OutputDisplay,
                 Hidden = Hidden,
                 Favorite = Favorite,
                 InstallDirectory = InstallDirectory,
@@ -1875,11 +1854,6 @@ namespace Playnite.SDK.Models
                 if (Frequency != tro.Frequency)
                 {
                     tro.Frequency = Frequency;
-                }
-
-                if (!string.Equals(OutputDisplay, tro.OutputDisplay, StringComparison.Ordinal))
-                {
-                    tro.OutputDisplay = OutputDisplay;
                 }
 
                 if (Hidden != tro.Hidden)
@@ -2175,11 +2149,6 @@ namespace Playnite.SDK.Models
             if (Frequency != otherGame.Frequency)
             {
                 changes.Add(GameField.Frequency);
-            }
-
-            if (!string.Equals(OutputDisplay, otherGame.OutputDisplay, StringComparison.Ordinal))
-            {
-                changes.Add(GameField.OutputDisplay);
             }
 
             if (Hidden != otherGame.Hidden)

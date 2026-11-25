@@ -2574,7 +2574,7 @@ namespace Playnite
             try
             {
                 var limit = DateTime.Now.AddDays(-7);
-                foreach (var pattern in new[] { "playnite*.log", "extensions*.log", "switch-display*.log", "debug.log" })
+                foreach (var pattern in new[] { "playnite*.log", "extensions*.log", "switch-display*.log", "set-resolution*.log", "debug.log" })
                 {
                     foreach (var file in Directory.GetFiles(PlaynitePaths.ConfigRootPath, pattern))
                     {

@@ -554,22 +554,6 @@ namespace Playnite.DesktopApp.ViewModels
             }
         }
 
-        private bool useOutputDisplayChanges;
-        public bool UseOutputDisplayChanges
-        {
-            get
-            {
-                return useOutputDisplayChanges;
-            }
-
-            set
-            {
-                useOutputDisplayChanges = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
-            }
-        }
-
         private bool useHdrChanges;
         public bool UseHdrChanges
         {
@@ -841,7 +825,6 @@ namespace Playnite.DesktopApp.ViewModels
                     (UseHdrChanges ||
                     UseResolutionChanges ||
                     UseFrequencyChanges ||
-                    UseOutputDisplayChanges ||
                     UseHiddenChanges ||
                     UseFavoriteChanges ||
                     UseLastActivityChanges ||
@@ -1304,16 +1287,6 @@ namespace Playnite.DesktopApp.ViewModels
                     else
                     {
                         UseFrequencyChanges = true;
-                    }
-                    break;
-                case nameof(Game.OutputDisplay):
-                    if (IsSingleGameEdit)
-                    {
-                        UseOutputDisplayChanges = Game.OutputDisplay != EditingGame.OutputDisplay;
-                    }
-                    else
-                    {
-                        UseOutputDisplayChanges = true;
                     }
                     break;
                 case nameof(Game.PreScript):

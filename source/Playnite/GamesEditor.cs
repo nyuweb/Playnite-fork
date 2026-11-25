@@ -187,7 +187,7 @@ namespace Playnite
             }
         }
 
-        public void PlayGame(Game game, bool launchedFromUI, int actionIndex = -1, string targetDisplay = null)
+        public void PlayGame(Game game, bool launchedFromUI, int actionIndex = -1)
         {
             if (!game.IsInstalled)
             {
@@ -346,9 +346,10 @@ namespace Playnite
                     {  "SelectedRomFile", startingArgs.SelectedRomFile }
                 };
 
-                // The game's own display (or the one picked in the game menu) becomes the only active one for the session.
-                var displayName = targetDisplay.IsNullOrWhiteSpace() ? game.OutputDisplay : targetDisplay;
-                if (!displayName.IsNullOrWhiteSpace() && DisplayUtilities.SwitchTo(displayName, game.ResolutionWidth, game.ResolutionHeight, game.Frequency))
+                // The game's own resolution / frequency is applied to the primary display for the session.
+                var hasResolution = game.ResolutionWidth > 0 && game.ResolutionHeight > 0;
+                if ((hasResolution || game.Frequency > 0) &&
+                    DisplayUtilities.SetResolution(hasResolution ? game.ResolutionWidth : 0, hasResolution ? game.ResolutionHeight : 0, game.Frequency))
                 {
                     displaySwitchGameId = game.Id;
                 }
