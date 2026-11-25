@@ -134,7 +134,7 @@ namespace Playnite
 
                 var info = new DisplayInfo
                 {
-                    Name = string.IsNullOrWhiteSpace(nameInfo.monitorFriendlyDeviceName) ? $"Display {path.targetInfo.id}" : nameInfo.monitorFriendlyDeviceName,
+                    Name = string.IsNullOrWhiteSpace(nameInfo.monitorFriendlyDeviceName) ? "Retro4K" : nameInfo.monitorFriendlyDeviceName,
                     Port = GetPortName((uint)nameInfo.outputTechnology),
                     Active = active
                 };
