@@ -50,6 +50,8 @@ function Set-DisplayModeSafe($id, [int]$w, [int]$h, [int]$hz) {
     if (-not $useRes -and $hz -le 0) { return }
 
     $cur = Find-DisplayById $id
+    # RetroTINK (EDID RTK, ou @@@ si inconnu): pas de mise a l'echelle par la carte, le mode envoye est vraiment celui demande
+    $isRetro = ($cur -and "$($cur.DevicePath)" -match '#(RTK|@@@)\w{4}#')
     if ($cur) {
         $m = Read-Mode $cur.Mode
         $resOk = (-not $useRes) -or ($m.Width -eq $w -and $m.Height -eq $h)
@@ -57,11 +59,17 @@ function Set-DisplayModeSafe($id, [int]$w, [int]$h, [int]$hz) {
         if ($resOk -and $hzOk) { return }
     }
 
+    if ($isRetro) { Write-Log "Ecran RetroTINK detecte ($($cur.DevicePath)): mise a l'echelle identite, taille active ${w}x${h}" }
     Step {
         $cfg = Get-DisplayConfig
         if ($useRes) { $cfg = $cfg | Set-DisplayResolution -DisplayId $id -Width $w -Height $h }
         if ($hz -gt 0) { $cfg = $cfg | Set-DisplayRefreshRate -DisplayId $id -RefreshRate $hz }
-        $cfg | Use-DisplayConfig
+        if ($useRes -and $isRetro) {
+            $cfg.SetDisplayScaling($id, 'DISPLAYCONFIG_SCALING_IDENTITY')
+            $cfg.SetDisplayActiveSize($id, $w, $h)
+            $cfg | Use-DisplayConfig -AllowChanges
+        }
+        else { $cfg | Use-DisplayConfig }
     } | Out-Null
     Start-Sleep -Seconds 2
 
