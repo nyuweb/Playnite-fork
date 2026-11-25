@@ -1,6 +1,4 @@
 ﻿param(
-    # EDID du RetroTINK, a changer a la main si le port ou l'adaptateur change (cherche dans le DevicePath de l'ecran, voir set-resolution.log)
-    [string]$RetroTinkEdid = 'RTK',
     [Parameter(Mandatory = $true)][ValidateSet('Set', 'Restore')][string]$Action,
     [int]$Width = 0,
     [int]$Height = 0,
@@ -15,7 +13,7 @@
 #                    L'etat precedent est ecrit dans -SnapshotFile.
 #  -Action Restore : remet la resolution / frequence decrites par -SnapshotFile.
 #
-#  L'echelle d'affichage n'est jamais modifiee.
+#  Avec une resolution, la mise a l'echelle de la carte est coupee (identite) et le signal envoye a cette taille.
 #  Prerequis : module DisplayConfig.
 #  Codes de sortie : 0 ok, 1 module DisplayConfig absent, 2 ecran principal introuvable.
 # ============================================================
@@ -53,9 +51,6 @@ function Set-DisplayModeSafe($id, [int]$w, [int]$h, [int]$hz) {
     if (-not $useRes -and $hz -le 0) { return }
 
     $cur = Find-DisplayById $id
-    # RetroTINK (EDID en 1ere ligne du script): pas de mise a l'echelle par la carte, le mode envoye est vraiment celui demande
-    $isRetro = ($cur -and $RetroTinkEdid -and "$($cur.DevicePath)" -like "*$RetroTinkEdid*")
-    if ($cur) { Write-Log "Ecran $id DevicePath=$($cur.DevicePath) (RetroTINK: $isRetro, EDID cherche: '$RetroTinkEdid')" }
     if ($cur) {
         $m = Read-Mode $cur.Mode
         $resOk = (-not $useRes) -or ($m.Width -eq $w -and $m.Height -eq $h)
@@ -63,12 +58,12 @@ function Set-DisplayModeSafe($id, [int]$w, [int]$h, [int]$hz) {
         if ($resOk -and $hzOk) { return }
     }
 
-    if ($isRetro) { Write-Log "Ecran RetroTINK detecte ($($cur.DevicePath)): mise a l'echelle identite, taille active ${w}x${h}" }
     Step {
         $cfg = Get-DisplayConfig
         if ($useRes) { $cfg = $cfg | Set-DisplayResolution -DisplayId $id -Width $w -Height $h }
         if ($hz -gt 0) { $cfg = $cfg | Set-DisplayRefreshRate -DisplayId $id -RefreshRate $hz }
-        if ($useRes -and $isRetro) {
+        # Pas de mise a l'echelle par la carte: le mode envoye a l'ecran est exactement celui demande (quel que soit l'ecran)
+        if ($useRes) {
             $cfg.SetDisplayScaling($id, 'DISPLAYCONFIG_SCALING_IDENTITY')
             $cfg.SetDisplayActiveSize($id, $w, $h)
             $cfg | Use-DisplayConfig -AllowChanges
