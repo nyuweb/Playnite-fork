@@ -1,4 +1,14 @@
-﻿# ============================================================
+﻿param(
+    # EDID du RetroTINK, a changer a la main si le port ou l'adaptateur change (cherche dans le DevicePath de l'ecran, voir set-resolution.log)
+    [string]$RetroTinkEdid = 'RTK',
+    [Parameter(Mandatory = $true)][ValidateSet('Set', 'Restore')][string]$Action,
+    [int]$Width = 0,
+    [int]$Height = 0,
+    [int]$Hz = 0,
+    [Parameter(Mandatory = $true)][string]$SnapshotFile
+)
+
+# ============================================================
 #  set-resolution.ps1  (lance par Playnite, silencieux)
 #
 #  -Action Set     : applique -Width x -Height / -Hz (> 0) sur l'ecran principal.
@@ -9,13 +19,6 @@
 #  Prerequis : module DisplayConfig.
 #  Codes de sortie : 0 ok, 1 module DisplayConfig absent, 2 ecran principal introuvable.
 # ============================================================
-param(
-    [Parameter(Mandatory = $true)][ValidateSet('Set', 'Restore')][string]$Action,
-    [int]$Width = 0,
-    [int]$Height = 0,
-    [int]$Hz = 0,
-    [Parameter(Mandatory = $true)][string]$SnapshotFile
-)
 
 $LogFile = Join-Path (Split-Path -Parent $SnapshotFile) 'set-resolution.log'
 
@@ -50,8 +53,9 @@ function Set-DisplayModeSafe($id, [int]$w, [int]$h, [int]$hz) {
     if (-not $useRes -and $hz -le 0) { return }
 
     $cur = Find-DisplayById $id
-    # RetroTINK (EDID RTK, ou @@@ si inconnu): pas de mise a l'echelle par la carte, le mode envoye est vraiment celui demande
-    $isRetro = ($cur -and "$($cur.DevicePath)" -match '#(RTK|@@@)\w{4}#')
+    # RetroTINK (EDID en 1ere ligne du script): pas de mise a l'echelle par la carte, le mode envoye est vraiment celui demande
+    $isRetro = ($cur -and $RetroTinkEdid -and "$($cur.DevicePath)" -like "*$RetroTinkEdid*")
+    if ($cur) { Write-Log "Ecran $id DevicePath=$($cur.DevicePath) (RetroTINK: $isRetro, EDID cherche: '$RetroTinkEdid')" }
     if ($cur) {
         $m = Read-Mode $cur.Mode
         $resOk = (-not $useRes) -or ($m.Width -eq $w -and $m.Height -eq $h)
