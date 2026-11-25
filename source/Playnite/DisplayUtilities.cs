@@ -15,6 +15,7 @@ namespace Playnite
     public class DisplayInfo
     {
         public string Name { get; set; }
+        public uint Id { get; set; }
         public string Port { get; set; }
         public bool Active { get; set; }
         public bool Primary { get; set; }
@@ -135,6 +136,7 @@ namespace Playnite
                 var info = new DisplayInfo
                 {
                     Name = string.IsNullOrWhiteSpace(nameInfo.monitorFriendlyDeviceName) ? "Retro4K" : nameInfo.monitorFriendlyDeviceName,
+                    Id = path.targetInfo.id,
                     Port = GetPortName((uint)nameInfo.outputTechnology),
                     Active = active
                 };
@@ -184,8 +186,10 @@ namespace Playnite
             }
 
             FileSystem.DeleteFile(SnapshotPath);
-            logger.Info($"Switching display to {displayName} ({width}x{height} @ {frequency} Hz).");
-            var args = $"-Action Switch -DisplayName {Quote(displayName)} -Width {width} -Height {height} -Hz {frequency} -SnapshotFile {Quote(SnapshotPath)}";
+            // The display id changes between boots, so the saved name is resolved to the current id here.
+            var id = GetDisplays().FirstOrDefault(a => string.Equals(a.Name, displayName, StringComparison.OrdinalIgnoreCase))?.Id ?? 0;
+            logger.Info($"Switching display to {displayName} (id {id}, {width}x{height} @ {frequency} Hz).");
+            var args = $"-Action Switch -DisplayName {Quote(displayName)} -DisplayId {id} -Width {width} -Height {height} -Hz {frequency} -SnapshotFile {Quote(SnapshotPath)}";
             var exitCode = RunScript(args);
             logger.Info($"Display switch finished with exit code {exitCode}.");
             return File.Exists(SnapshotPath);

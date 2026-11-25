@@ -87,7 +87,7 @@ namespace Playnite.FullscreenApp.ViewModels
                 items.Add(new GameActionItem(
                     StartGameOnDisplayCommand,
                     display,
-                    string.Format(ResourceProvider.GetString(LOC.PlayGameOnDisplay), display.Label),
+                    string.Format(ResourceProvider.GetString(LOC.PlayGameOnDisplay), display.Name),
                     "GameMenuPlayButtonTemplate"));
             }
 

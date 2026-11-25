@@ -1,7 +1,7 @@
 ﻿# ============================================================
 #  switch-display.ps1  (lance par Playnite, silencieux)
 #
-#  -Action Switch  : active l'ecran -DisplayName, eteint les autres, applique
+#  -Action Switch  : active l'ecran -DisplayId (sinon -DisplayName), eteint les autres, applique
 #                    resolution / frequence si fournies (> 0), le met principal
 #                    et bascule le son dessus. Une photo de l'etat precedent
 #                    est ecrite dans -SnapshotFile.
@@ -15,6 +15,7 @@
 param(
     [Parameter(Mandatory = $true)][ValidateSet('Switch', 'Restore')][string]$Action,
     [string]$DisplayName = '',
+    [int]$DisplayId = 0,
     [int]$Width = 0,
     [int]$Height = 0,
     [int]$Hz = 0,
@@ -148,8 +149,10 @@ if ($Action -eq 'Restore') {
 #  Switch
 # ============================================================
 Write-State 'Etat avant switch'
-$target = Find-Display $DisplayName
-if (-not $target) { Write-Log "Ecran introuvable: $DisplayName"; exit 2 }
+$target = $null
+if ($DisplayId -gt 0) { $target = Find-DisplayById $DisplayId }
+if (-not $target) { $target = Find-Display $DisplayName }
+if (-not $target) { Write-Log "Ecran introuvable: $DisplayName (id $DisplayId)"; exit 2 }
 
 # Photo de l'etat actuel (ecrans, principal, resolution, frequence, sortie audio)
 $snap = @(Get-DisplayInfo | ForEach-Object {
