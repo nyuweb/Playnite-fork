@@ -187,7 +187,7 @@ namespace Playnite
             }
         }
 
-        public void PlayGame(Game game, bool launchedFromUI, int actionIndex = -1)
+        public void PlayGame(Game game, bool launchedFromUI, int actionIndex = -1, bool setResolution = false)
         {
             if (!game.IsInstalled)
             {
@@ -346,9 +346,9 @@ namespace Playnite
                     {  "SelectedRomFile", startingArgs.SelectedRomFile }
                 };
 
-                // The game's own resolution / frequency is applied to the primary display for the session.
+                // Only when asked from the game menu: the game's resolution / frequency is applied to the primary display for the session.
                 var hasResolution = game.ResolutionWidth > 0 && game.ResolutionHeight > 0;
-                if ((hasResolution || game.Frequency > 0) &&
+                if (setResolution && (hasResolution || game.Frequency > 0) &&
                     DisplayUtilities.SetResolution(hasResolution ? game.ResolutionWidth : 0, hasResolution ? game.ResolutionHeight : 0, game.Frequency))
                 {
                     displaySwitchGameId = game.Id;
@@ -1497,6 +1497,19 @@ namespace Playnite
                 logger.Info($"[restore timing] restoring window, {stopTimer.ElapsedMilliseconds} ms after stop event.");
                 Application.Restore();
                 logger.Info($"[restore timing] restore call returned, {stopTimer.ElapsedMilliseconds} ms after stop event.");
+
+                // The window can be shown without regaining focus (Windows refuses the foreground change), try again.
+                for (var attempt = 1; attempt <= 3 && !Application.IsActive; attempt++)
+                {
+                    Thread.Sleep(1000);
+                    if (Application.IsActive)
+                    {
+                        break;
+                    }
+
+                    logger.Warn($"Playnite is not active after game exit, restoring again (attempt {attempt}).");
+                    Application.Restore();
+                }
             }
 
             if (AppSettings.DiscordPresenceEnabled)

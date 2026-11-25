@@ -59,6 +59,7 @@ namespace Playnite.FullscreenApp.ViewModels
 
         public RelayCommand CloseCommand => new RelayCommand(() => Close());
         public RelayCommand StartGameCommand => new RelayCommand(() => StartGame());
+        public RelayCommand StartGameWithResolutionCommand => new RelayCommand(() => StartGame(true));
         public RelayCommand InstallGameCommand => new RelayCommand(() => InstallGame());
         public RelayCommand UninstallGameCommand => new RelayCommand(() => UninstallGame());
         public RelayCommand ToggleFavoritesCommand => new RelayCommand(() => ToggleFavorites());
@@ -81,6 +82,26 @@ namespace Playnite.FullscreenApp.ViewModels
             Game = game;
             var items = new List<GameActionItem>();
             items.Add(new GameActionItem(StartGameCommand, ResourceProvider.GetString(LOC.PlayGame), "GameMenuPlayButtonTemplate"));
+            var hasResolution = game.ResolutionWidth > 0 && game.ResolutionHeight > 0;
+            if (hasResolution || game.Frequency > 0)
+            {
+                var parts = new List<string>();
+                if (hasResolution)
+                {
+                    parts.Add($"{game.ResolutionWidth}x{game.ResolutionHeight}");
+                }
+
+                if (game.Frequency > 0)
+                {
+                    parts.Add($"{game.Frequency} Hz");
+                }
+
+                items.Add(new GameActionItem(
+                    StartGameWithResolutionCommand,
+                    string.Format(ResourceProvider.GetString(LOC.PlayGameOnResolution), string.Join(" @ ", parts)),
+                    "GameMenuPlayButtonTemplate"));
+            }
+
             GameItems = items;
         }
 
@@ -100,10 +121,10 @@ namespace Playnite.FullscreenApp.ViewModels
             gamesEditor.ActivateAction(Game, action);
         }
 
-        public void StartGame()
+        public void StartGame(bool setResolution = false)
         {
             Close();
-            gamesEditor.PlayGame(Game, true);
+            gamesEditor.PlayGame(Game, true, -1, setResolution);
         }
 
         public void InstallGame()

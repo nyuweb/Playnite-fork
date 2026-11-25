@@ -2818,6 +2818,10 @@ namespace Playnite
         /// </summary>
         public const string PlayGame = "LOCPlayGame";
         /// <summary>
+        /// Play on {0}
+        /// </summary>
+        public const string PlayGameOnResolution = "LOCPlayGameOnResolution";
+        /// <summary>
         /// Install
         /// </summary>
         public const string InstallGame = "LOCInstallGame";

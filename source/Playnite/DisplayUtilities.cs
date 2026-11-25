@@ -12,11 +12,11 @@ namespace Playnite
         private static readonly ILogger logger = LogManager.GetLogger();
 
         public static string ScriptPath => Path.Combine(PlaynitePaths.ProgramPath, "Scripts", "set-resolution.ps1");
-        private static string SnapshotPath => Path.Combine(PlaynitePaths.ConfigRootPath, "display-snapshot.json");
+        private static string SnapshotPath => Path.Combine(Path.GetTempPath(), "playnite-resolution.json");
 
         /// <summary>
         /// Applies resolution / frequency (when above 0) to the primary display. Returns true if the previous
-        /// mode was saved and <see cref="Restore"/> must be called later.
+        /// mode was saved to a small file in %TEMP% and <see cref="Restore"/> must be called later.
         /// </summary>
         public static bool SetResolution(int width, int height, int frequency)
         {
