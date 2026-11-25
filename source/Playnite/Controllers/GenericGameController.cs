@@ -706,6 +706,7 @@ namespace Playnite.Controllers
             {
                 ulong playTimeMs = 0;
                 var trackingWatch = new Stopwatch();
+                var lastLoggedProcesses = string.Empty;
                 var maxFailCount = 5;
                 var failCount = 0;
 
@@ -792,6 +793,14 @@ namespace Playnite.Controllers
                         logger.Warn(e, "Failed to get tracked process ids, using regular interval.");
                     }
 
+                    // Logged only when the set changes, to see which processes keep a game "running".
+                    var processesText = DescribeProcesses(processIds);
+                    if (processesText != lastLoggedProcesses)
+                    {
+                        lastLoggedProcesses = processesText;
+                        logger.Info($"Tracked processes of {Game.Name}: {processesText}");
+                    }
+
                     await ProcessExitWaiter.WaitAsync(processIds, trackingFrequency, watcherToken.Token);
                     trackingWatch.Stop();
                     if (trackingWatch.ElapsedMilliseconds > (trackingFrequency + 30_000))
@@ -805,6 +814,32 @@ namespace Playnite.Controllers
                     playTimeMs += (ulong)trackingWatch.ElapsedMilliseconds;
                 }
             });
+        }
+
+        private static string DescribeProcesses(IEnumerable<int> processIds)
+        {
+            if (processIds == null)
+            {
+                return "(not available)";
+            }
+
+            var items = new List<string>();
+            foreach (var id in processIds.OrderBy(a => a))
+            {
+                try
+                {
+                    using (var process = Process.GetProcessById(id))
+                    {
+                        items.Add($"{process.ProcessName} ({id})");
+                    }
+                }
+                catch
+                {
+                    items.Add($"? ({id})");
+                }
+            }
+
+            return items.Count == 0 ? "(none)" : string.Join(", ", items);
         }
 
         public override void Dispose()
