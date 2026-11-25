@@ -204,6 +204,15 @@ if ($target -and -not $target.Primary) {
 # 4. Sortie audio (on attend l'apparition du peripherique, 8 s max)
 if ($haveAudio) {
     $pattern = [regex]::Escape($DisplayName)
+    # Optionnel: display-audio.json ({ "Retro4K": "regex du nom du peripherique audio" }) pour les ecrans dont le nom ne figure pas dans celui du son
+    try {
+        $mapFile = Join-Path (Split-Path -Parent $SnapshotFile) 'display-audio.json'
+        if (Test-Path $mapFile) {
+            $map = Get-Content -Path $mapFile -Raw | ConvertFrom-Json
+            $custom = $map.PSObject.Properties | Where-Object { $_.Name -eq $DisplayName } | Select-Object -First 1
+            if ($custom -and $custom.Value) { $pattern = [string]$custom.Value }
+        }
+    } catch { Write-Log "display-audio.json illisible: $($_.Exception.Message)" }
     $deadline = (Get-Date).AddSeconds(8)
     $done = $false
     while ((Get-Date) -lt $deadline -and -not $done) {
@@ -216,7 +225,10 @@ if ($haveAudio) {
             Start-Sleep -Milliseconds 500
         }
     }
-    if (-not $done) { Write-Log "Peripherique audio introuvable pour: $DisplayName" }
+    if (-not $done) {
+        $names = (Get-AudioDevice -List | Where-Object { $_.Type -eq 'Playback' } | ForEach-Object { $_.Name }) -join ' | '
+        Write-Log "Peripherique audio introuvable pour: $DisplayName (motif '$pattern'). Peripheriques: $names"
+    }
 }
 Write-State 'Etat apres switch'
 exit 0
