@@ -16,6 +16,7 @@ param(
     [Parameter(Mandatory = $true)][ValidateSet('Switch', 'Restore')][string]$Action,
     [string]$DisplayName = '',
     [int]$DisplayId = 0,
+    [string]$AudioId = '',
     [int]$Width = 0,
     [int]$Height = 0,
     [int]$Hz = 0,
@@ -149,9 +150,10 @@ if ($Action -eq 'Restore') {
 #  Switch
 # ============================================================
 Write-State 'Etat avant switch'
+# Le nom est la cle quand il existe (l'id n'est qu'une position); un nom vide se retrouve par l'id
 $target = $null
-if ($DisplayId -gt 0) { $target = Find-DisplayById $DisplayId }
-if (-not $target) { $target = Find-Display $DisplayName }
+if ($DisplayName.Trim()) { $target = Find-Display $DisplayName.Trim() }
+if (-not $target -and $DisplayId -gt 0) { $target = Find-DisplayById $DisplayId }
 if (-not $target) { Write-Log "Ecran introuvable: $DisplayName (id $DisplayId)"; exit 2 }
 
 # Photo de l'etat actuel (ecrans, principal, resolution, frequence, sortie audio)
@@ -204,6 +206,7 @@ if ($target -and -not $target.Primary) {
 # 4. Sortie audio (on attend l'apparition du peripherique, 8 s max)
 if ($haveAudio) {
     $pattern = [regex]::Escape($DisplayName)
+    if ($AudioId) { $pattern = $null }
     # Optionnel: display-audio.json ({ "Retro4K": "regex du nom du peripherique audio" }) pour les ecrans dont le nom ne figure pas dans celui du son
     try {
         $mapFile = Join-Path (Split-Path -Parent $SnapshotFile) 'display-audio.json'
@@ -216,7 +219,7 @@ if ($haveAudio) {
     $deadline = (Get-Date).AddSeconds(8)
     $done = $false
     while ((Get-Date) -lt $deadline -and -not $done) {
-        $dev = Get-AudioDevice -List | Where-Object { $_.Type -eq 'Playback' -and $_.Name -match $pattern } | Select-Object -First 1
+        $dev = Get-AudioDevice -List | Where-Object { $_.Type -eq 'Playback' -and (($AudioId -and $_.ID -eq $AudioId) -or ($pattern -and $_.Name -match $pattern)) } | Select-Object -First 1
         if ($dev) {
             Step { Set-AudioDevice -ID $dev.ID } | Out-Null
             $done = $true

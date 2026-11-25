@@ -15,7 +15,13 @@ namespace Playnite
     public class DisplayInfo
     {
         public string Name { get; set; }
-        public uint Id { get; set; }
+        // DisplayConfig module DisplayId (0 = unknown); not the same as the Windows target id.
+        public int Id { get; set; }
+        // Name as reported by Windows, may be blank; Name is then a placeholder.
+        public string DeviceName { get; set; }
+        public string AudioId { get; set; }
+        public string AudioName { get; set; }
+        public int Hz { get; set; }
         public string Port { get; set; }
         public bool Active { get; set; }
         public bool Primary { get; set; }
@@ -34,6 +40,19 @@ namespace Playnite
         private static readonly object lockObj = new object();
         private const uint pathActiveFlag = 0x1;
         private static List<DisplayInfo> displays;
+
+        public const string UnnamedDisplayName = "Retro4K";
+        public const string ConfigPathVariable = "PLAYNITE_DISPLAY_CONFIG";
+
+        // Display config shared with other tools, override the path with the PLAYNITE_DISPLAY_CONFIG environment variable.
+        public static string ConfigPath
+        {
+            get
+            {
+                var custom = Environment.GetEnvironmentVariable(ConfigPathVariable);
+                return string.IsNullOrWhiteSpace(custom) ? Path.Combine(Path.GetTempPath(), "htpc-displays.json") : Environment.ExpandEnvironmentVariables(custom);
+            }
+        }
 
         public static string ScreensFilePath => Path.Combine(PlaynitePaths.ConfigRootPath, "screens.json");
         public static string ScriptPath => Path.Combine(PlaynitePaths.ProgramPath, "Scripts", "switch-display.ps1");
@@ -72,7 +91,7 @@ namespace Playnite
             {
                 try
                 {
-                    displays = Enumerate();
+                    displays = LoadConfig() ?? Enumerate();
                 }
                 catch (Exception e) when (!PlayniteEnvironment.ThrowAllErrors)
                 {
@@ -81,6 +100,61 @@ namespace Playnite
                 }
 
                 return displays.ToList();
+            }
+        }
+
+        private class ConfigFile
+        {
+            public List<ConfigScreen> Screens { get; set; }
+        }
+
+        private class ConfigScreen
+        {
+            public string Role { get; set; }
+            public int DisplayId { get; set; }
+            public string DisplayName { get; set; }
+            public string Connection { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public int Hz { get; set; }
+            public string AudioId { get; set; }
+            public string AudioName { get; set; }
+        }
+
+        private static List<DisplayInfo> LoadConfig()
+        {
+            var path = ConfigPath;
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            try
+            {
+                var config = Serialization.FromJson<ConfigFile>(FileSystem.ReadStringFromFile(path));
+                if (config?.Screens.HasItems() != true)
+                {
+                    return null;
+                }
+
+                logger.Info($"Using display config {path}.");
+                return config.Screens.Select(a => new DisplayInfo
+                {
+                    Name = string.IsNullOrWhiteSpace(a.DisplayName) ? UnnamedDisplayName : a.DisplayName.Trim(),
+                    DeviceName = a.DisplayName?.Trim(),
+                    Id = a.DisplayId,
+                    Port = a.Connection,
+                    Width = a.Width,
+                    Height = a.Height,
+                    Hz = a.Hz,
+                    AudioId = a.AudioId,
+                    AudioName = a.AudioName
+                }).ToList();
+            }
+            catch (Exception e) when (!PlayniteEnvironment.ThrowAllErrors)
+            {
+                logger.Error(e, $"Failed to read display config {path}.");
+                return null;
             }
         }
 
@@ -135,8 +209,7 @@ namespace Playnite
 
                 var info = new DisplayInfo
                 {
-                    Name = string.IsNullOrWhiteSpace(nameInfo.monitorFriendlyDeviceName) ? "Retro4K" : nameInfo.monitorFriendlyDeviceName,
-                    Id = path.targetInfo.id,
+                    Name = string.IsNullOrWhiteSpace(nameInfo.monitorFriendlyDeviceName) ? UnnamedDisplayName : nameInfo.monitorFriendlyDeviceName,
                     Port = GetPortName((uint)nameInfo.outputTechnology),
                     Active = active
                 };
@@ -186,10 +259,17 @@ namespace Playnite
             }
 
             FileSystem.DeleteFile(SnapshotPath);
-            // The display id changes between boots, so the saved name is resolved to the current id here.
-            var id = GetDisplays().FirstOrDefault(a => string.Equals(a.Name, displayName, StringComparison.OrdinalIgnoreCase))?.Id ?? 0;
-            logger.Info($"Switching display to {displayName} (id {id}, {width}x{height} @ {frequency} Hz).");
-            var args = $"-Action Switch -DisplayName {Quote(displayName)} -DisplayId {id} -Width {width} -Height {height} -Hz {frequency} -SnapshotFile {Quote(SnapshotPath)}";
+            var display = GetDisplays().FirstOrDefault(a => string.Equals(a.Name, displayName, StringComparison.OrdinalIgnoreCase));
+            if (display != null && width <= 0 && height <= 0 && frequency <= 0)
+            {
+                // The game does not define a mode, use the target of the display.
+                width = display.Width;
+                height = display.Height;
+                frequency = display.Hz;
+            }
+
+            logger.Info($"Switching display to {displayName} (id {display?.Id ?? 0}, {width}x{height} @ {frequency} Hz).");
+            var args = $"-Action Switch -DisplayName {Quote(display?.DeviceName ?? displayName)} -DisplayId {display?.Id ?? 0} -AudioId {Quote(display?.AudioId)} -Width {width} -Height {height} -Hz {frequency} -SnapshotFile {Quote(SnapshotPath)}";
             var exitCode = RunScript(args);
             logger.Info($"Display switch finished with exit code {exitCode}.");
             return File.Exists(SnapshotPath);
