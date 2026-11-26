@@ -154,6 +154,23 @@ namespace Playnite.DesktopApp.ViewModels
             });
         }
 
+        public RelayCommand<object> SelectResolutionScriptCommand
+        {
+            get => new RelayCommand<object>((a) =>
+            {
+                var path = dialogs.SelectFile("PowerShell script (*.ps1)|*.ps1|*.*|*.*");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    Settings.ResolutionScriptPath = path;
+                }
+            });
+        }
+
+        public RelayCommand<object> ClearResolutionScriptCommand
+        {
+            get => new RelayCommand<object>((a) => Settings.ResolutionScriptPath = string.Empty);
+        }
+
         public RelayCommand<object> ClearWebCacheCommand
         {
             get => new RelayCommand<object>((url) =>

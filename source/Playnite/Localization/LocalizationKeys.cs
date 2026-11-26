@@ -2820,6 +2820,7 @@ namespace Playnite
         /// <summary>
         /// Play on {0}
         /// </summary>
+        public const string SettingsResolutionScript = "LOCSettingsResolutionScript";
         public const string PlayGameOnResolution = "LOCPlayGameOnResolution";
         /// <summary>
         /// Install

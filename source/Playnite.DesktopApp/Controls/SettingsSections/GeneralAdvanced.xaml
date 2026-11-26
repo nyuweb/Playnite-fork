@@ -54,6 +54,18 @@
                       pbeh:SelectorBehaviors.EnumSource="{x:Type p:AccessibilityInterfaceOptions}" />
         </StackPanel>
 
+        <DockPanel Margin="0,15,0,0">
+            <TextBlock Text="{DynamicResource LOCSettingsResolutionScript}"
+                       DockPanel.Dock="Left" VerticalAlignment="Center"/>
+            <Button Content="X" DockPanel.Dock="Right" Padding="5,0,5,0" Margin="5,0,0,0"
+                    Command="{Binding ClearResolutionScriptCommand}"/>
+            <Button Content="{DynamicResource LOCChange}"
+                    DockPanel.Dock="Right" Padding="5,0,5,0" Margin="10,0,0,0"
+                    Command="{Binding SelectResolutionScriptCommand}"/>
+            <TextBox Text="{Binding Settings.ResolutionScriptPath}"
+                     DockPanel.Dock="Left" Margin="10,0,0,0" IsReadOnly="True"/>
+        </DockPanel>
+
         <Button Name="ButtonClearWebCace" Content="{DynamicResource LOCSettingsClearWebCache}"
                 HorizontalAlignment="Left" Margin="0,45,0,0"
                 ToolTip="{DynamicResource LOCSettingsClearWebCacheTooltip}" ToolTipService.InitialShowDelay="0"

@@ -348,7 +348,7 @@ namespace Playnite
 
                 // Only when asked from the game menu: the game's resolution / frequency is applied to the primary display for the session.
                 var hasResolution = game.ResolutionWidth > 0 && game.ResolutionHeight > 0;
-                if (setResolution && (hasResolution || game.Frequency > 0) &&
+                if (setResolution && DisplayUtilities.IsAvailable && (hasResolution || game.Frequency > 0) &&
                     DisplayUtilities.SetResolution(hasResolution ? game.ResolutionWidth : 0, hasResolution ? game.ResolutionHeight : 0, game.Frequency))
                 {
                     displaySwitchGameId = game.Id;

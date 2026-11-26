@@ -11,7 +11,12 @@ namespace Playnite
     {
         private static readonly ILogger logger = LogManager.GetLogger();
 
-        public static string ScriptPath => Path.Combine(PlaynitePaths.ProgramPath, "Scripts", "set-resolution.ps1");
+        public static string ScriptPath => PlayniteApplication.Current?.AppSettings?.ResolutionScriptPath;
+
+        /// <summary>
+        /// True when the user configured an existing resolution script in settings.
+        /// </summary>
+        public static bool IsAvailable => !string.IsNullOrEmpty(ScriptPath) && File.Exists(ScriptPath);
         private static string SnapshotPath => Path.Combine(Path.GetTempPath(), "playnite-resolution.json");
 
         /// <summary>
@@ -20,9 +25,9 @@ namespace Playnite
         /// </summary>
         public static bool SetResolution(int width, int height, int frequency)
         {
-            if (!File.Exists(ScriptPath))
+            if (!IsAvailable)
             {
-                logger.Error($"Resolution script not found: {ScriptPath}");
+                logger.Error($"Resolution script not set or not found: {ScriptPath}");
                 return false;
             }
 
@@ -35,7 +40,7 @@ namespace Playnite
 
         public static void Restore()
         {
-            if (!File.Exists(SnapshotPath) || !File.Exists(ScriptPath))
+            if (!File.Exists(SnapshotPath) || !IsAvailable)
             {
                 return;
             }

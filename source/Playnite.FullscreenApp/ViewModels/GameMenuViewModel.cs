@@ -83,7 +83,7 @@ namespace Playnite.FullscreenApp.ViewModels
             var items = new List<GameActionItem>();
             items.Add(new GameActionItem(StartGameCommand, ResourceProvider.GetString(LOC.PlayGame), "GameMenuPlayButtonTemplate"));
             var hasResolution = game.ResolutionWidth > 0 && game.ResolutionHeight > 0;
-            if (hasResolution || game.Frequency > 0)
+            if (DisplayUtilities.IsAvailable && (hasResolution || game.Frequency > 0))
             {
                 var parts = new List<string>();
                 if (hasResolution)

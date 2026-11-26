@@ -1687,6 +1687,17 @@ namespace Playnite
             }
         }
 
+        private string resolutionScriptPath;
+        public string ResolutionScriptPath
+        {
+            get => resolutionScriptPath;
+            set
+            {
+                resolutionScriptPath = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string directoryOpenCommand;
         public string DirectoryOpenCommand
         {
