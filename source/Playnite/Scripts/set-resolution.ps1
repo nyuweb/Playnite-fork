@@ -9,37 +9,48 @@
 # ============================================================
 #  set-resolution.ps1  (lance par Playnite, silencieux)
 #
-#  -Action Set     : applique -Width x -Height / -Hz (> 0) sur l'ecran principal.
-#                    L'etat precedent est ecrit dans -SnapshotFile.
-#  -Action Restore : remet la resolution / frequence decrites par -SnapshotFile.
+#  -Action Set     : applique -Width x -Height et/ou -Hz (0 = ne pas toucher) sur l'ecran principal.
+#                    L'etat d'avant est ecrit dans -SnapshotFile (garde tel quel s'il existe deja
+#                    pour le meme ecran : un Restore precedent a ete manque).
+#  -Action Restore : remet l'ecran decrit par -SnapshotFile dans son mode d'origine, puis supprime le fichier.
 #
-#  Avec une resolution, la mise a l'echelle de la carte est coupee (identite) et le signal envoye a cette taille.
-#  Certaines cartes (Intel iGPU) ignorent cette demande et gardent le mode prefere de l'ecran (ex. 720p)
-#  en y agrandissant l'image : on verifie alors le signal reel et on impose un timing natif
-#  pris dans les modes annonces par l'ecran (EDID, via WMI).
+#  Avec une resolution, la mise a l'echelle par la carte est coupee (identite). Certaines cartes gardent
+#  pourtant l'ancien signal (ou le mode prefere de l'ecran) et y agrandissent l'image : le signal reel est
+#  alors verifie et un timing natif annonce par l'ecran (EDID, via WMI) est impose.
 #  Prerequis : module DisplayConfig.
-#  Codes de sortie : 0 ok, 1 module DisplayConfig absent, 2 ecran principal introuvable.
+#  Codes de sortie : 0 ok, 1 module DisplayConfig absent, 2 ecran principal introuvable, 3 erreur inattendue.
+#  Journal : set-resolution.log, a cote de -SnapshotFile.
 # ============================================================
 
+# Les cmdlets DisplayConfig emettent des erreurs non terminantes : 'Stop' les rend capturables.
+$ErrorActionPreference = 'Stop'
+
 $LogFile = Join-Path (Split-Path -Parent $SnapshotFile) 'set-resolution.log'
+$Clock = [Diagnostics.Stopwatch]::StartNew()
 
 function Write-Log([string]$msg) {
-    try { Add-Content -Path $LogFile -Value ('{0} [{1}] {2}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Action, $msg) } catch { }
+    try { Add-Content -Path $LogFile -Value ('{0:yyyy-MM-dd HH:mm:ss} +{1,5}ms [{2}] {3}' -f (Get-Date), $Clock.ElapsedMilliseconds, $Action, $msg) } catch { }
 }
 
-# Execute un bloc, retourne $true / $false selon la reussite (les erreurs sont journalisees)
-function Step([scriptblock]$code) {
-    $Error.Clear()
-    try   { & $code | Out-Null }
-    catch { Write-Log "Echec: $($_.Exception.Message) :: $($code.ToString().Trim())"; return $false }
-    if ($Error.Count -gt 0) { Write-Log "Erreur non bloquante: $($Error[0]) :: $($code.ToString().Trim())" }
-    return $true
+# Attend qu'une condition soit vraie (sondage court) au lieu d'une pause fixe
+function Wait-Until([scriptblock]$cond, [double]$maxSec, [int]$pollMs = 200) {
+    $limit = (Get-Date).AddSeconds($maxSec)
+    do {
+        try { if (& $cond) { return $true } } catch { }
+        Start-Sleep -Milliseconds $pollMs
+    } while ((Get-Date) -lt $limit)
+    return $false
 }
 
-# Acces direct a QueryDisplayConfig / SetDisplayConfig : signal reel envoye a l'ecran
-# et application d'un timing complet (source + cible), sans laisser Windows le modifier.
-if (-not ('HtpcSignal' -as [type])) {
-    Add-Type -TypeDefinition @'
+# Execute une action ; $true si elle a reussi, sinon journalise l'erreur et renvoie $false
+function Step([string]$what, [scriptblock]$code) {
+    try   { & $code | Out-Null; return $true }
+    catch { Write-Log "Echec ($what) : $($_.Exception.Message)"; return $false }
+}
+
+# ---------------- Signal reel (QueryDisplayConfig / SetDisplayConfig) ----------------
+# Compile une fois dans .cache\ (nom = hash du source), puis seulement charge.
+$SignalSource = @'
 using System;
 using System.Runtime.InteropServices;
 
@@ -145,13 +156,36 @@ public static class HtpcSignal
     }
 }
 '@
+
+function Import-Signal {
+    if ('HtpcSignal' -as [type]) { return $true }
+    try {
+        $sha  = [Security.Cryptography.SHA1]::Create()
+        $hash = -join ($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($SignalSource))[0..5] | ForEach-Object { $_.ToString('x2') })
+        $dir  = Join-Path $PSScriptRoot '.cache'
+        $dll  = Join-Path $dir "HtpcSignal-$hash.dll"
+        if (-not (Test-Path $dll)) {
+            $null = New-Item -ItemType Directory -Force $dir
+            try { Get-ChildItem $dir -Filter 'HtpcSignal-*.dll' | Remove-Item -Force } catch { }
+            Add-Type -TypeDefinition $SignalSource -OutputAssembly $dll -OutputType Library
+            Write-Log 'Classe HtpcSignal compilee'
+        }
+        if (-not ('HtpcSignal' -as [type])) { Add-Type -Path $dll }
+        return $true
+    }
+    catch { Write-Log "Classe HtpcSignal indisponible : $($_.Exception.Message)"; return $false }
 }
 
-function Find-DisplayById($id) {
-    Get-DisplayInfo | Where-Object { $_.DisplayId -eq $id } | Select-Object -First 1
+# ---------------- Ecrans ----------------
+
+# Ecran actif par DevicePath (stable), a defaut par DisplayId (simple position, peut changer)
+function Find-Display([string]$devicePath, $displayId) {
+    $all = @(Get-DisplayInfo | Where-Object { $_.Active })
+    if ($devicePath) { return $all | Where-Object { "$($_.DevicePath)" -eq $devicePath } | Select-Object -First 1 }
+    return $all | Where-Object { $_.DisplayId -eq $displayId } | Select-Object -First 1
 }
 
-# "3840x2160@120 Hz" -> largeur, hauteur, frequence (0 si inconnu)
+# "3840x2160@59.94 Hz" -> largeur, hauteur, frequence arrondie (0 si inconnu)
 function Read-Mode($modeText) {
     $w = 0; $h = 0; $r = 0
     if ("$modeText" -match '(\d+)\s*x\s*(\d+)') { $w = [int]$Matches[1]; $h = [int]$Matches[2] }
@@ -159,133 +193,166 @@ function Read-Mode($modeText) {
     return [pscustomobject]@{ Width = $w; Height = $h; Hz = $r }
 }
 
-# Signal reel envoye a l'ecran (taille active) ; $null si inconnu
-function Get-Signal($display) {
+# Signal reel : DeskW/DeskH (bureau), Width/Height (signal), Scaling ; $null si inconnu
+function Get-Signal([string]$devicePath) {
     try {
-        $s = [HtpcSignal]::Get("$($display.DevicePath)")
+        $s = [HtpcSignal]::Get($devicePath)
         if (-not $s) { return $null }
         $v = $s -split ','
         return [pscustomobject]@{ DeskW = [int]$v[0]; DeskH = [int]$v[1]; Width = [int]$v[2]; Height = [int]$v[3]; Scaling = [int]$v[4] }
     }
-    catch { Write-Log "Lecture du signal impossible: $($_.Exception.Message)"; return $null }
+    catch { return $null }
 }
 
-# Le signal correspond-il au bureau demande (pas d'agrandissement par la carte) ?
-function Test-SignalNative($display, [int]$w, [int]$h) {
-    $sig = Get-Signal $display
-    if (-not $sig) { return $true }    # inconnu : on ne force rien
-    return ($sig.Width -eq $w -and $sig.Height -eq $h)
+# Le mode courant correspond-il a la demande ? (signal natif inclus quand une resolution est demandee)
+function Test-Mode([string]$devicePath, [int]$w, [int]$h, [int]$hz) {
+    $d = Find-Display $devicePath
+    if (-not $d) { return $false }
+    $m = Read-Mode $d.Mode
+    if ($hz -gt 0 -and [math]::Abs($m.Hz - $hz) -ge 1) { return $false }
+    if ($w -le 0) { return $true }
+    if ($m.Width -ne $w -or $m.Height -ne $h) { return $false }
+    $sig = Get-Signal $devicePath
+    return (-not $sig) -or ($sig.Width -eq $w -and $sig.Height -eq $h)
 }
 
-# Timings annonces par l'ecran pour w x h, du plus fiable au moins fiable
-# (detaille EDID, puis etabli VESA, puis le reste), a la frequence la plus proche de $hz.
-function Get-EdidTimings($display, [int]$w, [int]$h, [int]$hz) {
-    # \\?\DISPLAY#RTK4206#4&29906b6&0&UID49#{guid}  ->  DISPLAY\RTK4206\4&29906b6&0&UID49
-    $inst = ("$($display.DevicePath)" -replace '^\\\\\?\\', '' -replace '#\{[^}]+\}$', '') -replace '#', '\'
+# Timings annonces par l'ecran (EDID, via WMI) pour w x h, les plus proches de $hz (60 si 0) a 1 Hz pres
+# d'abord (59.94 = 60), puis detailles avant etablis VESA avant le reste. Chacun est propose avec la fraction de frequence de WMI
+# (parfois arrondie) puis la fraction exacte horloge / (total H x total V) : certains pilotes n'acceptent que l'une.
+function Get-EdidTimings([string]$devicePath, [int]$w, [int]$h, [int]$hz) {
+    # \\?\DISPLAY#RTK4206#5&3605778&0&UID4355#{guid}  ->  DISPLAY\RTK4206\5&3605778&0&UID4355
+    $inst = ($devicePath -replace '^\\\\\?\\', '' -replace '#\{[^}]+\}$', '') -replace '#', '\'
     $wmi = Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorListedSupportedSourceModes -ErrorAction SilentlyContinue |
         Where-Object { ($_.InstanceName -replace '_\d+$', '') -eq $inst } | Select-Object -First 1
     if (-not $wmi) { return @() }
+    $target = if ($hz -gt 0) { $hz } else { 60 }
     $rank = @{ 4 = 0; 1 = 1 }
-    @($wmi.MonitorSourceModes |
+    $modes = $wmi.MonitorSourceModes |
         Where-Object { $_.HorizontalActivePixels -eq $w -and $_.VerticalActivePixels -eq $h -and $_.VerticalRefreshRateDenominator -gt 0 } |
         ForEach-Object {
-            $rate = $_.VerticalRefreshRateNumerator / $_.VerticalRefreshRateDenominator
             [pscustomobject]@{
                 PixelRate = [uint64]$_.PixelClockRate
                 TotalW    = [uint32]($_.HorizontalActivePixels + $_.HorizontalBlankingPixels)
                 TotalH    = [uint32]($_.VerticalActivePixels + $_.VerticalBlankingPixels)
                 VN        = [uint32]$_.VerticalRefreshRateNumerator
                 VD        = [uint32]$_.VerticalRefreshRateDenominator
-                Rate      = $rate
+                Rate      = $_.VerticalRefreshRateNumerator / $_.VerticalRefreshRateDenominator
                 Rank      = $(if ($rank.ContainsKey([int]$_.TimingType)) { $rank[[int]$_.TimingType] } else { 2 })
             }
         } |
         Where-Object { $hz -le 0 -or [math]::Abs($_.Rate - $hz) -lt 1 } |
-        Sort-Object Rank, @{ Expression = { if ($hz -gt 0) { [math]::Abs($_.Rate - $hz) } else { [math]::Abs($_.Rate - 60) } } })
+        Sort-Object @{ Expression = { [math]::Round([math]::Abs($_.Rate - $target)) } }, Rank
+
+    $seen = @{}
+    foreach ($t in $modes) {
+        $exact = $t.TotalW * $t.TotalH
+        foreach ($f in @(@($t.VN, $t.VD), @([uint32]$t.PixelRate, [uint32]$exact))) {
+            $key = '{0},{1},{2},{3},{4}' -f $t.PixelRate, $t.TotalW, $t.TotalH, $f[0], $f[1]
+            if ($seen[$key]) { continue }
+            $seen[$key] = $true
+            [pscustomobject]@{ PixelRate = $t.PixelRate; TotalW = $t.TotalW; TotalH = $t.TotalH; VN = [uint32]$f[0]; VD = [uint32]$f[1] }
+        }
+    }
 }
 
-# Impose un signal natif w x h quand la carte a garde un autre mode en agrandissant l'image
-function Repair-Signal($id, [int]$w, [int]$h, [int]$hz) {
-    $cur = Find-DisplayById $id
-    if (-not $cur -or (Test-SignalNative $cur $w $h)) { return }
-    $sig = Get-Signal $cur
-    Write-Log "Signal non natif: bureau ${w}x${h} mais signal $($sig.Width)x$($sig.Height) (scaling $($sig.Scaling)), on impose le timing"
+# Bureau au bon mode mais signal different (agrandi par la carte) : impose un timing natif
+function Repair-Signal([string]$devicePath, [int]$w, [int]$h, [int]$hz) {
+    if (-not (Import-Signal)) { return }
+    $sig = Get-Signal $devicePath
+    if (-not $sig -or $sig.DeskW -ne $w -or $sig.DeskH -ne $h) { return }
+    if ($sig.Width -eq $w -and $sig.Height -eq $h) { return }
+    Write-Log "Signal non natif : bureau ${w}x${h}, signal $($sig.Width)x$($sig.Height) (scaling $($sig.Scaling))"
 
-    $timings = Get-EdidTimings $cur $w $h $hz
+    $timings = @(Get-EdidTimings $devicePath $w $h $hz)
     if ($timings.Count -eq 0) { Write-Log "Aucun timing ${w}x${h} annonce par l'ecran : signal laisse tel quel"; return }
     foreach ($t in $timings) {
-        $r = [HtpcSignal]::Set("$($cur.DevicePath)", $w, $h, $t.PixelRate, $t.TotalW, $t.TotalH, $t.VN, $t.VD)
-        $desc = '{0}x{1} @ {2:N2} Hz ({3:N3} MHz, total {4}x{5})' -f $w, $h, $t.Rate, ($t.PixelRate / 1e6), $t.TotalW, $t.TotalH
-        if ($r -eq 0) {
-            Start-Sleep -Milliseconds 500
-            $cur = Find-DisplayById $id
-            if ($cur -and (Test-SignalNative $cur $w $h)) { Write-Log "Signal natif applique: $desc"; return }
+        $desc = '{0}x{1} @ {2:N3} Hz ({3:N3} MHz, total {4}x{5}, {6}/{7})' -f $w, $h, ($t.VN / $t.VD), ($t.PixelRate / 1e6), $t.TotalW, $t.TotalH, $t.VN, $t.VD
+        $r = -1
+        try { $r = [HtpcSignal]::Set($devicePath, $w, $h, $t.PixelRate, $t.TotalW, $t.TotalH, $t.VN, $t.VD) } catch { }
+        if ($r -eq 0 -and (Wait-Until { $s = Get-Signal $devicePath; $s -and $s.Width -eq $w -and $s.Height -eq $h } 2)) {
+            Write-Log "Signal natif applique : $desc"; return
         }
-        Write-Log "Timing refuse ($r): $desc"
+        Write-Log "Timing refuse ($r) : $desc"
     }
     Write-Log 'Aucun timing accepte : signal laisse tel quel'
 }
 
-# Applique resolution et frequence (0 = ne pas toucher), verifie, repli si besoin
-function Set-DisplayModeSafe($id, [int]$w, [int]$h, [int]$hz) {
+# Applique resolution et/ou frequence (0 = ne pas toucher), verifie, repli commande par commande si besoin
+function Set-Mode($display, [int]$w, [int]$h, [int]$hz) {
     $useRes = ($w -gt 0 -and $h -gt 0)
+    if (-not $useRes) { $w = 0; $h = 0 }
     if (-not $useRes -and $hz -le 0) { return }
+    $path = "$($display.DevicePath)"
+    $id = $display.DisplayId
+    $null = Import-Signal
+    if (Test-Mode $path $w $h $hz) { Write-Log 'Deja dans le bon mode'; return }
 
-    $cur = Find-DisplayById $id
-    if ($cur) {
-        $m = Read-Mode $cur.Mode
-        $resOk = (-not $useRes) -or ($m.Width -eq $w -and $m.Height -eq $h -and (Test-SignalNative $cur $w $h))
-        $hzOk = ($hz -le 0) -or ([math]::Abs($m.Hz - $hz) -lt 1)
-        if ($resOk -and $hzOk) { return }
-    }
-
-    Step {
+    $null = Step 'configuration groupee' {
         $cfg = Get-DisplayConfig
         if ($useRes) { $cfg = $cfg | Set-DisplayResolution -DisplayId $id -Width $w -Height $h }
         if ($hz -gt 0) { $cfg = $cfg | Set-DisplayRefreshRate -DisplayId $id -RefreshRate $hz }
-        # Pas de mise a l'echelle par la carte: le mode envoye a l'ecran est exactement celui demande (quel que soit l'ecran)
         if ($useRes) {
+            # Pas de mise a l'echelle par la carte : le signal doit etre exactement le mode demande
             $cfg.SetDisplayScaling($id, 'DISPLAYCONFIG_SCALING_IDENTITY')
             $cfg.SetDisplayActiveSize($id, $w, $h)
             $cfg | Use-DisplayConfig -AllowChanges
         }
         else { $cfg | Use-DisplayConfig }
-    } | Out-Null
-    Start-Sleep -Seconds 2
-
-    $cur = Find-DisplayById $id
-    if ($cur -and $hz -gt 0 -and ([math]::Abs((Read-Mode $cur.Mode).Hz - $hz) -ge 1)) {
-        if ($useRes) {
-            Step { Set-DisplayResolution -DisplayId $id -Width $w -Height $h -AllowChanges } | Out-Null
-            Start-Sleep -Seconds 1
-        }
-        Step { Set-DisplayRefreshRate -DisplayId $id -RefreshRate $hz } | Out-Null
-        Start-Sleep -Seconds 1
+    }
+    # Bureau et frequence (le signal natif est traite apres par Repair-Signal)
+    $deskOk = {
+        $d = Find-Display $path
+        if (-not $d) { return $false }
+        $m = Read-Mode $d.Mode
+        ((-not $useRes) -or ($m.Width -eq $w -and $m.Height -eq $h)) -and (($hz -le 0) -or [math]::Abs($m.Hz - $hz) -lt 1)
+    }
+    if (-not (Wait-Until $deskOk 3)) {
+        Write-Log 'Mode incomplet apres la configuration groupee : commandes une par une'
+        if ($useRes) { $null = Step 'resolution' { Set-DisplayResolution -DisplayId $id -Width $w -Height $h -AllowChanges } }
+        if ($hz -gt 0) { $null = Step 'frequence' { Set-DisplayRefreshRate -DisplayId $id -RefreshRate $hz } }
+        if (-not (Wait-Until $deskOk 3)) { Write-Log "Mode toujours incorrect : $((Find-Display $path).Mode)" }
     }
 
-    if ($useRes) { Repair-Signal $id $w $h $hz }
+    if ($useRes) { Repair-Signal $path $w $h $hz }
+    Write-Log "Mode final : $((Find-Display $path).Mode)"
 }
 
-if ((Test-Path $LogFile) -and ((Get-Item $LogFile).Length -gt 200KB)) { Remove-Item $LogFile -Force -ErrorAction SilentlyContinue }
-Write-Log "Demarrage: ${Width}x${Height} @ $Hz Hz, snapshot=$SnapshotFile (existe: $(Test-Path $SnapshotFile))"
-try { Import-Module DisplayConfig -ErrorAction Stop } catch { Write-Log "Module DisplayConfig absent: $($_.Exception.Message)"; exit 1 }
+# ---------------- Principal ----------------
+try {
+    if ((Test-Path $LogFile) -and ((Get-Item $LogFile).Length -gt 200KB)) { Remove-Item $LogFile -Force -ErrorAction SilentlyContinue }
+    Write-Log "Demarrage : ${Width}x${Height} @ $Hz Hz, snapshot=$SnapshotFile (existe : $(Test-Path $SnapshotFile))"
+    try { Import-Module DisplayConfig } catch { Write-Log "Module DisplayConfig absent : $($_.Exception.Message)"; exit 1 }
 
-if ($Action -eq 'Restore') {
+    $snap = $null
     if (Test-Path $SnapshotFile) {
-        $snap = Get-Content -Path $SnapshotFile -Raw | ConvertFrom-Json
-        Set-DisplayModeSafe $snap.DisplayId $snap.Width $snap.Height $snap.Hz
-        Remove-Item -Path $SnapshotFile -Force -ErrorAction SilentlyContinue
+        try { $snap = Get-Content -Path $SnapshotFile -Raw | ConvertFrom-Json } catch { Write-Log "Snapshot illisible : $($_.Exception.Message)" }
     }
-    else { Write-Log 'Aucune photo a restaurer.' }
+
+    if ($Action -eq 'Restore') {
+        if (-not $snap) { Write-Log 'Aucun snapshot a restaurer'; exit 0 }
+        $display = Find-Display "$($snap.DevicePath)" $snap.DisplayId
+        if ($display) { Set-Mode $display $snap.Width $snap.Height $snap.Hz }
+        else { Write-Log 'Ecran du snapshot inactif ou absent : rien a restaurer' }
+        Remove-Item -Path $SnapshotFile -Force -ErrorAction SilentlyContinue
+        exit 0
+    }
+
+    $display = Get-DisplayInfo | Where-Object { $_.Active -and $_.Primary } | Select-Object -First 1
+    if (-not $display) { Write-Log 'Ecran principal introuvable'; exit 2 }
+
+    if ($snap -and "$($snap.DevicePath)" -eq "$($display.DevicePath)") {
+        Write-Log "Snapshot existant garde ($($snap.Width)x$($snap.Height) @ $($snap.Hz) Hz) : Restore precedent manque"
+    }
+    else {
+        $m = Read-Mode $display.Mode
+        [pscustomobject]@{ DevicePath = "$($display.DevicePath)"; DisplayId = $display.DisplayId; Width = $m.Width; Height = $m.Height; Hz = $m.Hz } |
+            ConvertTo-Json | Set-Content -Path $SnapshotFile -Encoding UTF8
+    }
+
+    Set-Mode $display $Width $Height $Hz
     exit 0
 }
-
-$target = Get-DisplayInfo | Where-Object { $_.Active -and $_.Primary } | Select-Object -First 1
-if (-not $target) { Write-Log 'Ecran principal introuvable'; exit 2 }
-
-$m = Read-Mode $target.Mode
-[pscustomobject]@{ DisplayId = $target.DisplayId; Width = $m.Width; Height = $m.Height; Hz = $m.Hz } |
-    ConvertTo-Json | Set-Content -Path $SnapshotFile -Encoding UTF8
-
-Set-DisplayModeSafe $target.DisplayId $Width $Height $Hz
-exit 0
+catch {
+    Write-Log "Erreur inattendue : $($_.Exception.Message) (ligne $($_.InvocationInfo.ScriptLineNumber))"
+    exit 3
+}
