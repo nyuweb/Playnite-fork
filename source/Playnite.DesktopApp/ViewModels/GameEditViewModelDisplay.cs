@@ -27,7 +27,6 @@ namespace Playnite.DesktopApp.ViewModels
             new ResolutionChoice { Width = 1920, Height = 1080, Label = "1920x1080" },
             new ResolutionChoice { Width = 1280, Height = 720, Label = "1280x720" },
             new ResolutionChoice { Width = 1024, Height = 768, Label = "1024x768" },
-            new ResolutionChoice { Width = 720, Height = 480, Label = "720x480" },
             new ResolutionChoice { Width = 640, Height = 480, Label = "640x480" }
         };
 
